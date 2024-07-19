@@ -48,7 +48,7 @@ jobs:
 
       - name: "Check out OpenMM source code"
         run: |
-          git clone git@github.com:openmm/openmm.git
+          git clone https://github.com/openmm/openmm.git
           cd openmm
           git checkout $GIT_REVISION
 
