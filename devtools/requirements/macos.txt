@@ -2,3 +2,4 @@ cmake
 cython
 swig
 numpy<2.0
+delocate

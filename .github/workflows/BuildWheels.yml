@@ -61,19 +61,20 @@ jobs:
 
           cmake .. \
             -DCMAKE_INSTALL_PREFIX=${HOME}/openmm-install \
+            -DPYTHON_EXECUTABLE=${pythonLocation}/python \
             ${{ matrix.CMAKE_FLAGS }}
 
       - name: "Build OpenMM"
         shell: bash -l {0}
         run: |
           cd openmm/build
-          make -j2 install
+          make -j4 install
 
       - name: "Build Python wrappers"
         shell: bash -l {0}
         run: |
           cd openmm/build
-          make -j2 PythonInstall
+          make -j4 PythonInstall
 
       - name: "Test Python wrappers"
         shell: bash -l {0}
@@ -81,3 +82,13 @@ jobs:
           set -x
           python -m openmm.testInstallation
           python -c "import openmm as mm; print('---Loaded---', *mm.pluginLoadedLibNames, '---Failed---', *mm.Platform.getPluginLoadFailures(), sep='\n')"
+
+      - name: "Build wheel"
+        shell: bash -l {0}
+        run: |
+          cd openmm/build/python
+          pip wheel . --wheel-dir=dist
+          export DYLD_LIBRARY_PATH=${HOME}/openmm-install/lib
+          cd dist
+          python -m delocate.cmd.delocate_wheel -w fixed -v *.whl -L "../OpenMM.libs/lib"
+          python ${{ github.workspace }}/devtools/scripts/add_plugins_and_headers.py "${HOME}/openmm-install"
