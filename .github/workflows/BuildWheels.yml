@@ -34,6 +34,14 @@ jobs:
       - name: "Install dependencies"
         run: pip install -r devtools/requirements/${{ matrix.requirements }}.txt
 
+      - name: "Install Homebrew"
+        if: startsWith(matrix.os, 'macos')
+        uses: Homebrew/actions/setup-homebrew@master
+
+      - name: "Install Doxygen"
+        if: startsWith(matrix.os, 'macos')
+        run: brew install doxygen
+
       - name: "Set SDK on MacOS (if needed)"
         if: startsWith(matrix.os, 'macos')
         run: source devtools/scripts/install_macos_sdk.sh

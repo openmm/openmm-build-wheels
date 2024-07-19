@@ -2,4 +2,3 @@ cmake
 cython
 swig
 numpy<2.0
-doxygen==1.8.14
