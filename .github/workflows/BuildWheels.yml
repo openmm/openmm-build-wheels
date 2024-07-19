@@ -32,7 +32,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: "Install dependencies"
-        run: pip install -r devltools/requirements/${{ matrix.requirements }}.txt
+        run: pip install -r devtools/requirements/${{ matrix.requirements }}.txt
 
       - name: "Set SDK on MacOS (if needed)"
         if: startsWith(matrix.os, 'macos')
