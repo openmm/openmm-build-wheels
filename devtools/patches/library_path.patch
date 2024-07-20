@@ -1,0 +1,13 @@
+diff --git a/wrappers/python/setup.py b/wrappers/python/setup.py
+index d2a147065..82a44575d 100644
+--- a/wrappers/python/setup.py
++++ b/wrappers/python/setup.py
+@@ -90,7 +90,7 @@ version = '%(version)s'
+ full_version = '%(full_version)s'
+ git_revision = '%(git_revision)s'
+ release = %(isrelease)s
+-openmm_library_path = r'%(path)s'
++openmm_library_path = os.path.join(os.path.dirname(__file__), "..", "OpenMM.libs", "lib")
+
+ if not release:
+     version = full_version

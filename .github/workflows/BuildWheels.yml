@@ -51,6 +51,7 @@ jobs:
           git clone https://github.com/openmm/openmm.git
           cd openmm
           git checkout $GIT_REVISION
+          git apply ${{ github.workspace }}/devtools/patches/library_path.patch
 
       - name: "Configure build with CMake"
         shell: bash -l {0}
@@ -90,5 +91,7 @@ jobs:
           ${pythonLocation}/pip wheel . --wheel-dir=dist
           export DYLD_LIBRARY_PATH=${HOME}/openmm-install/lib
           cd dist
+          pwd
+          ls
           ${pythonLocation}/python -m delocate.cmd.delocate_wheel -w fixed -v *.whl -L "../OpenMM.libs/lib"
           ${pythonLocation}/python ${{ github.workspace }}/devtools/scripts/add_plugins_and_headers.py "${HOME}/openmm-install"
