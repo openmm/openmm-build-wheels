@@ -32,7 +32,10 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: "Install dependencies"
-        run: pip install -r devtools/requirements/${{ matrix.requirements }}.txt
+        run: |
+          which python
+          which pip
+          pip install -r devtools/requirements/${{ matrix.requirements }}.txt
 
       - name: "Install Homebrew"
         if: startsWith(matrix.os, 'macos')
@@ -80,8 +83,8 @@ jobs:
         shell: bash -l {0}
         run: |
           set -x
-          python -m openmm.testInstallation
-          python -c "import openmm as mm; print('---Loaded---', *mm.pluginLoadedLibNames, '---Failed---', *mm.Platform.getPluginLoadFailures(), sep='\n')"
+          ${pythonLocation}/python -m openmm.testInstallation
+          ${pythonLocation}/python -c "import openmm as mm; print('---Loaded---', *mm.pluginLoadedLibNames, '---Failed---', *mm.Platform.getPluginLoadFailures(), sep='\n')"
 
       - name: "Build wheel"
         shell: bash -l {0}
@@ -90,5 +93,5 @@ jobs:
           pip wheel . --wheel-dir=dist
           export DYLD_LIBRARY_PATH=${HOME}/openmm-install/lib
           cd dist
-          python -m delocate.cmd.delocate_wheel -w fixed -v *.whl -L "../OpenMM.libs/lib"
-          python ${{ github.workspace }}/devtools/scripts/add_plugins_and_headers.py "${HOME}/openmm-install"
+          ${pythonLocation}/python -m delocate.cmd.delocate_wheel -w fixed -v *.whl -L "../OpenMM.libs/lib"
+          ${pythonLocation}/python ${{ github.workspace }}/devtools/scripts/add_plugins_and_headers.py "${HOME}/openmm-install"
