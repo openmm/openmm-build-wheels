@@ -1,8 +1,14 @@
 diff --git a/wrappers/python/setup.py b/wrappers/python/setup.py
-index d2a147065..82a44575d 100644
+index d2a147065..31a621562 100644
 --- a/wrappers/python/setup.py
 +++ b/wrappers/python/setup.py
-@@ -90,7 +90,7 @@ version = '%(version)s'
+@@ -85,12 +85,13 @@ def writeVersionPy(filename="openmm/version.py", major_version_num=MAJOR_VERSION
+
+     cnt = """
+ # THIS FILE IS GENERATED FROM OPENMM SETUP.PY
++import os
+ short_version = '%(version)s'
+ version = '%(version)s'
  full_version = '%(full_version)s'
  git_revision = '%(git_revision)s'
  release = %(isrelease)s
