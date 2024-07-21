@@ -32,7 +32,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: "Install dependencies"
-        run: ${pythonLocation}/bin/pip install -r devtools/requirements/${{ matrix.requirements }}.txt
+        run: pip install -r devtools/requirements/${{ matrix.requirements }}.txt
 
       - name: "Install Homebrew"
         if: startsWith(matrix.os, 'macos')
@@ -62,7 +62,6 @@ jobs:
 
           cmake .. \
             -DCMAKE_INSTALL_PREFIX=${HOME}/openmm-install \
-            -DPYTHON_EXECUTABLE=${pythonLocation}/python \
             ${{ matrix.CMAKE_FLAGS }}
 
       - name: "Build OpenMM"
@@ -82,16 +81,16 @@ jobs:
         run: |
           set -x
           ls -R /Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/openmm/../OpenMM.libs/lib
-          ${pythonLocation}/python -m openmm.testInstallation
-          ${pythonLocation}/python -c "import openmm as mm; print(mm.version.openmm_library_path)"
-          ${pythonLocation}/python -c "import openmm as mm; print('---Loaded---', *mm.pluginLoadedLibNames, '---Failed---', *mm.Platform.getPluginLoadFailures(), sep='\n')"
+          python -m openmm.testInstallation
+          python -c "import openmm as mm; print(mm.version.openmm_library_path)"
+          python -c "import openmm as mm; print('---Loaded---', *mm.pluginLoadedLibNames, '---Failed---', *mm.Platform.getPluginLoadFailures(), sep='\n')"
 
       - name: "Build wheel"
         shell: bash -l {0}
         run: |
           cd openmm/build/python
-          ${pythonLocation}/bin/pip wheel . --wheel-dir=dist
+          pip wheel . --wheel-dir=dist
           export DYLD_LIBRARY_PATH=${HOME}/openmm-install/lib
           cd dist
-          ${pythonLocation}/python -m delocate.cmd.delocate_wheel -w fixed -v *.whl -L "../OpenMM.libs/lib"
-          ${pythonLocation}/python ${{ github.workspace }}/devtools/scripts/add_plugins_and_headers.py "${HOME}/openmm-install"
+          python -m delocate.cmd.delocate_wheel -w fixed -v *.whl -L "../OpenMM.libs/lib"
+          python ${{ github.workspace }}/devtools/scripts/add_plugins_and_headers.py "${HOME}/openmm-install"
