@@ -64,7 +64,6 @@ jobs:
             -DCMAKE_INSTALL_PREFIX=${HOME}/openmm-install \
             -DPYTHON_EXECUTABLE=${pythonLocation}/python \
             ${{ matrix.CMAKE_FLAGS }}
-          cat CMakeCache.txt
 
       - name: "Build OpenMM"
         run: |
@@ -83,9 +82,9 @@ jobs:
 
       - name: "Build wheel"
         run: |
-          cd openmm/build/python
           python -c "import numpy; print(numpy)"
           make PythonBdistWheel
+          cd openmm/build/python
           export DYLD_LIBRARY_PATH=${HOME}/openmm-install/lib
           cd dist
           python -m delocate.cmd.delocate_wheel -w fixed -v *.whl -L "../OpenMM.libs/lib"
