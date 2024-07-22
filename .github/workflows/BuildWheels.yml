@@ -36,8 +36,7 @@ jobs:
           environment-name: build-env
           create-args: >-
             python=${{ matrix.python-version }}
-          with:
-            init-shell: bash
+          init-shell: bash
 
       - name: "Install dependencies"
         shell: bash -l {0}
