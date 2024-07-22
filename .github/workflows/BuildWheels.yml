@@ -85,7 +85,6 @@ jobs:
         run: |
           cd openmm/build/python
           python -c "import numpy; print(numpy)"
-#          pip wheel . --wheel-dir=dist
           make PythonBdistWheel
           export DYLD_LIBRARY_PATH=${HOME}/openmm-install/lib
           cd dist
