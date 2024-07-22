@@ -63,6 +63,7 @@ jobs:
           cmake .. \
             -DCMAKE_INSTALL_PREFIX=${HOME}/openmm-install \
             ${{ matrix.CMAKE_FLAGS }}
+          ls /usr/bin/python*
 
       - name: "Build OpenMM"
         run: |
