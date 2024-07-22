@@ -42,9 +42,9 @@ jobs:
         if: startsWith(matrix.os, 'macos')
         run: brew install doxygen
 
-      - name: "Set SDK on MacOS (if needed)"
-        if: startsWith(matrix.os, 'macos')
-        run: source devtools/scripts/install_macos_sdk.sh
+#      - name: "Set SDK on MacOS (if needed)"
+#        if: startsWith(matrix.os, 'macos')
+#        run: source devtools/scripts/install_macos_sdk.sh
 
       - name: "Check out OpenMM source code"
         run: |
