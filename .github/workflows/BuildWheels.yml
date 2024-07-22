@@ -100,3 +100,4 @@ jobs:
           python -m openmm.testInstallation
           python -c "import openmm as mm; print(mm.version.openmm_library_path)"
           python -c "import openmm as mm; print('---Loaded---', *mm.pluginLoadedLibNames, '---Failed---', *mm.Platform.getPluginLoadFailures(), sep='\n')"
+          ls -R /Users/runner/test_env/lib/python3.10/site-packages/openmm/../OpenMM.libs/lib
