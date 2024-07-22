@@ -83,9 +83,9 @@ jobs:
       - name: "Build wheel"
         run: |
           python -c "import numpy; print(numpy)"
+          cd openmm/build
           make PythonBdistWheel
-          cd openmm/build/python
           export DYLD_LIBRARY_PATH=${HOME}/openmm-install/lib
-          cd dist
+          cd python/dist
           python -m delocate.cmd.delocate_wheel -w fixed -v *.whl -L "../OpenMM.libs/lib"
           python ${{ github.workspace }}/devtools/scripts/add_plugins_and_headers.py "${HOME}/openmm-install"
