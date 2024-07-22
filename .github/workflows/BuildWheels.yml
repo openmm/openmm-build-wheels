@@ -63,15 +63,12 @@ jobs:
             -DCMAKE_INSTALL_PREFIX=${HOME}/openmm-install \
             -DPYTHON_EXECUTABLE=${pythonLocation}/python \
             ${{ matrix.CMAKE_FLAGS }}
+          cat CMakeCache.txt
 
       - name: "Build OpenMM"
         run: |
           cd openmm/build
           make -j4 install
-
-      - name: "Build Python wrappers"
-        run: |
-          cd openmm/build
           make -j4 PythonInstall
 
 #      - name: "Test Python wrappers"
@@ -86,6 +83,9 @@ jobs:
       - name: "Build wheel"
         run: |
           cd openmm/build/python
+          which pip
+          which python
+          python -c "import numpy"
           pip wheel . --wheel-dir=dist
           export DYLD_LIBRARY_PATH=${HOME}/openmm-install/lib
           cd dist
