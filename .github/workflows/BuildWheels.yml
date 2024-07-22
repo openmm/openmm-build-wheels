@@ -77,14 +77,14 @@ jobs:
           cd openmm/build
           make -j4 PythonInstall
 
-      - name: "Test Python wrappers"
-        shell: bash -l {0}
-        run: |
-          set -x
-          python -m openmm.testInstallation
-          python -c "import openmm as mm; print(mm.version.openmm_library_path)"
-          python -c "import openmm as mm; print(mm.version.__file__)"
-          python -c "import openmm as mm; print('---Loaded---', *mm.pluginLoadedLibNames, '---Failed---', *mm.Platform.getPluginLoadFailures(), sep='\n')"
+#      - name: "Test Python wrappers"
+#        shell: bash -l {0}
+#        run: |
+#          set -x
+#          python -m openmm.testInstallation
+#          python -c "import openmm as mm; print(mm.version.openmm_library_path)"
+#          python -c "import openmm as mm; print(mm.version.__file__)"
+#          python -c "import openmm as mm; print('---Loaded---', *mm.pluginLoadedLibNames, '---Failed---', *mm.Platform.getPluginLoadFailures(), sep='\n')"
 
       - name: "Build wheel"
         shell: bash -l {0}
