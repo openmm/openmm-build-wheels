@@ -40,6 +40,7 @@ jobs:
             init-shell: bash
 
       - name: "Install dependencies"
+        shell: bash -l {0}
         run: pip install -v -r devtools/requirements/${{ matrix.requirements }}.txt
 
       - name: "Install Homebrew"
@@ -63,6 +64,7 @@ jobs:
           git apply ${{ github.workspace }}/devtools/patches/bdist_wheel.patch
 
       - name: "Configure build with CMake"
+        shell: bash -l {0}
         run: |
           python -c "import sysconfig; print(sysconfig.get_platform())"
           arch -arch arm64 python -c "import sysconfig; print(sysconfig.get_platform())"
@@ -76,6 +78,7 @@ jobs:
             ${{ matrix.CMAKE_FLAGS }}
 
       - name: "Build OpenMM"
+        shell: bash -l {0}
         run: |
           cd openmm/build
           make -j4 install
@@ -91,6 +94,7 @@ jobs:
 #          python -c "import openmm as mm; print('---Loaded---', *mm.pluginLoadedLibNames, '---Failed---', *mm.Platform.getPluginLoadFailures(), sep='\n')"
 
       - name: "Build wheel"
+        shell: bash -l {0}
         run: |
           python -c "import numpy; print(numpy)"
           cd openmm/build
