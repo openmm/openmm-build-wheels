@@ -30,6 +30,7 @@ jobs:
         name: "Install Python"
         with:
           python-version: ${{ matrix.python-version }}
+          architecture: arm64
 
       - name: "Install dependencies"
         run: pip install -v -r devtools/requirements/${{ matrix.requirements }}.txt
