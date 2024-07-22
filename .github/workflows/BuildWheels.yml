@@ -70,7 +70,6 @@ jobs:
 
           cmake .. \
             -DCMAKE_INSTALL_PREFIX=${HOME}/openmm-install \
-            -DPYTHON_EXECUTABLE=${pythonLocation}/python \
             -DCMAKE_OSX_DEPLOYMENT_TARGET=11.0 \
             ${{ matrix.CMAKE_FLAGS }}
 
