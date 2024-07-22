@@ -32,7 +32,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: "Install dependencies"
-        run: pip install -r devtools/requirements/${{ matrix.requirements }}.txt
+        run: pip install -v -r devtools/requirements/${{ matrix.requirements }}.txt
 
       - name: "Install Homebrew"
         if: startsWith(matrix.os, 'macos')
@@ -62,6 +62,7 @@ jobs:
 
           cmake .. \
             -DCMAKE_INSTALL_PREFIX=${HOME}/openmm-install \
+            -DPYTHON_EXECUTABLE=${pythonLocation}/python \
             ${{ matrix.CMAKE_FLAGS }}
 
       - name: "Build OpenMM"
@@ -80,9 +81,9 @@ jobs:
         shell: bash -l {0}
         run: |
           set -x
-          ls -R /Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/openmm/../OpenMM.libs/lib
           python -m openmm.testInstallation
           python -c "import openmm as mm; print(mm.version.openmm_library_path)"
+          python -c "import openmm as mm; print(mm.version.__file__)"
           python -c "import openmm as mm; print('---Loaded---', *mm.pluginLoadedLibNames, '---Failed---', *mm.Platform.getPluginLoadFailures(), sep='\n')"
 
       - name: "Build wheel"
