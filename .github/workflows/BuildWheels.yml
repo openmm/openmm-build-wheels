@@ -95,6 +95,7 @@ jobs:
           set -x
           python -m venv "${HOME}/test_env"
           source "${HOME}/test_env/bin/activate"
+          cd openmm/build/python/dist
           pip install fixed/*
           python -m openmm.testInstallation
           python -c "import openmm as mm; print(mm.version.openmm_library_path)"
