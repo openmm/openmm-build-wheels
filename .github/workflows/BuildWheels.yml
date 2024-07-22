@@ -52,6 +52,7 @@ jobs:
           cd openmm
           git checkout $GIT_REVISION
           git apply ${{ github.workspace }}/devtools/patches/library_path.patch
+          git apply ${{ github.workspace }}/devtools/patches/bdist_wheel.patch
 
       - name: "Configure build with CMake"
         run: |
@@ -83,10 +84,9 @@ jobs:
       - name: "Build wheel"
         run: |
           cd openmm/build/python
-          which pip
-          which python
-          python -c "import numpy"
-          pip wheel . --wheel-dir=dist
+          python -c "import numpy; print(numpy)"
+#          pip wheel . --wheel-dir=dist
+          make PythonBdistWheel
           export DYLD_LIBRARY_PATH=${HOME}/openmm-install/lib
           cd dist
           python -m delocate.cmd.delocate_wheel -w fixed -v *.whl -L "../OpenMM.libs/lib"
