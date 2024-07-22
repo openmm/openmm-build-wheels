@@ -26,11 +26,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v5
-        name: "Install Python"
+#      - uses: actions/setup-python@v5
+#        name: "Install Python"
+#        with:
+#          python-version: ${{ matrix.python-version }}
+
+      - uses: mamba-org/setup-micromamba@v1
         with:
-          python-version: ${{ matrix.python-version }}
-          architecture: arm64
+          environment-name: build-env
+          create-args: >-
+            python=${{ matrix.python-version }}
 
       - name: "Install dependencies"
         run: pip install -v -r devtools/requirements/${{ matrix.requirements }}.txt
