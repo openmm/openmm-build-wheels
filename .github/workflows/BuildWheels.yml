@@ -54,7 +54,6 @@ jobs:
           git apply ${{ github.workspace }}/devtools/patches/library_path.patch
 
       - name: "Configure build with CMake"
-        shell: bash -l {0}
         run: |
           cd openmm
           mkdir build
@@ -66,13 +65,11 @@ jobs:
             ${{ matrix.CMAKE_FLAGS }}
 
       - name: "Build OpenMM"
-        shell: bash -l {0}
         run: |
           cd openmm/build
           make -j4 install
 
       - name: "Build Python wrappers"
-        shell: bash -l {0}
         run: |
           cd openmm/build
           make -j4 PythonInstall
@@ -87,7 +84,6 @@ jobs:
 #          python -c "import openmm as mm; print('---Loaded---', *mm.pluginLoadedLibNames, '---Failed---', *mm.Platform.getPluginLoadFailures(), sep='\n')"
 
       - name: "Build wheel"
-        shell: bash -l {0}
         run: |
           cd openmm/build/python
           pip wheel . --wheel-dir=dist
