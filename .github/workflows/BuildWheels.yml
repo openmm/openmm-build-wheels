@@ -85,7 +85,8 @@ jobs:
           make -j4 install
           make -j4 PythonInstall
 
-      - name: "Build wheel"
+      - name: "Build wheel (Mac)"
+        if: startsWith(matrix.os, 'macos')
         shell: bash -l {0}
         run: |
           cd openmm/build
@@ -93,6 +94,17 @@ jobs:
           export DYLD_LIBRARY_PATH=${HOME}/openmm-install/lib
           cd python/dist
           python -m delocate.cmd.delocate_wheel -w fixed -v *.whl -L "../OpenMM.libs/lib"
+          python ${{ github.workspace }}/devtools/scripts/add_plugins_and_headers.py "${HOME}/openmm-install"
+
+      - name: "Build wheel (Linux)"
+        if: startsWith(matrix.Name, 'Linux')
+        shell: bash -l {0}
+        run: |
+          cd openmm/build
+          make PythonBdistWheel
+          export LD_LIBRARY_PATH=${HOME}/openmm-install/lib
+          cd python/dist
+          auditwheel repair -w fixed -v *.whl -L "../OpenMM.libs/lib"
           python ${{ github.workspace }}/devtools/scripts/add_plugins_and_headers.py "${HOME}/openmm-install"
 
       - name: "Test the wheel"
