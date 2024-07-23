@@ -100,3 +100,10 @@ jobs:
           python -m openmm.testInstallation
           python -c "import openmm as mm; print(mm.version.openmm_library_path)"
           python -c "import openmm as mm; print('---Loaded---', *mm.pluginLoadedLibNames, '---Failed---', *mm.Platform.getPluginLoadFailures(), sep='\n')"
+
+      - name: "Upload the wheel"
+        uses: actions/upload-artifact@v4
+        with:
+          name: openmm-wheel
+          path: openmm/build/python/dist/fixed
+          retention-days: 3
