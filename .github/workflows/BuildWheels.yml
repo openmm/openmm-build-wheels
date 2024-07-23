@@ -24,6 +24,7 @@ jobs:
             requirements: macos
 
           - name: Linux x86
+            os: ubuntu-latest
             runs-on: ubuntu-latest
             container:
               image: quay.io/pypa/manylinux2014_x86_64
