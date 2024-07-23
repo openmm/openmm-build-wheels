@@ -12,24 +12,25 @@ on:
       - "main"
 
 jobs:
-  unix:
+  build-wheels:
     runs-on: ${{ matrix.os }}
     name: ${{ matrix.name }}
     strategy:
       matrix:
         python-version: ["3.10"]
         include:
-          - name: MacOS ARM
-            os: macos-latest
-            requirements: macos
+          #- name: MacOS ARM
+          #  os: macos-latest
+          #  requirements: macos
+
+          - name: Linux x86
+            runs-on: ubuntu-latest
+            container:
+              image: quay.io/pypa/manylinux2014_x86_64
+            requirements: linux
 
     steps:
       - uses: actions/checkout@v4
-
-#      - uses: actions/setup-python@v5
-#        name: "Install Python"
-#        with:
-#          python-version: ${{ matrix.python-version }}
 
       - uses: mamba-org/setup-micromamba@v1
         with:
@@ -46,9 +47,13 @@ jobs:
         if: startsWith(matrix.os, 'macos')
         uses: Homebrew/actions/setup-homebrew@master
 
-      - name: "Install Doxygen"
+      - name: "Install Doxygen with brew"
         if: startsWith(matrix.os, 'macos')
         run: brew install doxygen
+
+      - name: "Install Doxygen with apt"
+        if: startsWith(matrix.Name, 'Linux')
+        run: sudo apt-get install doxygen
 
       - name: "Set SDK on MacOS (if needed)"
         if: startsWith(matrix.os, 'macos')
