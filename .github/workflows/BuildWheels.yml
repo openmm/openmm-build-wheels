@@ -104,7 +104,9 @@ jobs:
           make PythonBdistWheel
           export LD_LIBRARY_PATH=${HOME}/openmm-install/lib
           cd python/dist
+          pip install auditwheel-symbols
           auditwheel show *.whl
+          auditwheel-symbols --manylinux 2014 *.whl
           auditwheel repair -w fixed -L "../OpenMM.libs/lib" *.whl
           python ${{ github.workspace }}/devtools/scripts/add_plugins_and_headers.py "${HOME}/openmm-install"
 
