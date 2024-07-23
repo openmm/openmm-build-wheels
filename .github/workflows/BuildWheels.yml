@@ -1,0 +1,109 @@
+name: OpenMM-Build-Wheels
+
+env:
+  GIT_REVISION: 'master'
+
+on:
+  push:
+    branches:
+      - "main"
+  pull_request:
+    branches:
+      - "main"
+
+jobs:
+  unix:
+    runs-on: ${{ matrix.os }}
+    name: ${{ matrix.name }}
+    strategy:
+      matrix:
+        python-version: ["3.10"]
+        include:
+          - name: MacOS ARM
+            os: macos-latest
+            requirements: macos
+
+    steps:
+      - uses: actions/checkout@v4
+
+#      - uses: actions/setup-python@v5
+#        name: "Install Python"
+#        with:
+#          python-version: ${{ matrix.python-version }}
+
+      - uses: mamba-org/setup-micromamba@v1
+        with:
+          environment-name: build-env
+          create-args: >-
+            python=${{ matrix.python-version }}
+          init-shell: bash
+
+      - name: "Install dependencies"
+        shell: bash -l {0}
+        run: pip install -v -r devtools/requirements/${{ matrix.requirements }}.txt
+
+      - name: "Install Homebrew"
+        if: startsWith(matrix.os, 'macos')
+        uses: Homebrew/actions/setup-homebrew@master
+
+      - name: "Install Doxygen"
+        if: startsWith(matrix.os, 'macos')
+        run: brew install doxygen
+
+      - name: "Set SDK on MacOS (if needed)"
+        if: startsWith(matrix.os, 'macos')
+        run: source devtools/scripts/install_macos_sdk.sh
+
+      - name: "Check out OpenMM source code"
+        run: |
+          git clone https://github.com/openmm/openmm.git
+          cd openmm
+          git checkout $GIT_REVISION
+          git apply ${{ github.workspace }}/devtools/patches/library_path.patch
+          git apply ${{ github.workspace }}/devtools/patches/bdist_wheel.patch
+
+      - name: "Configure build with CMake"
+        shell: bash -l {0}
+        run: |
+          cd openmm
+          mkdir build
+          cd build
+          cmake .. \
+            -DCMAKE_INSTALL_PREFIX=${HOME}/openmm-install \
+            ${{ matrix.CMAKE_FLAGS }}
+
+      - name: "Build OpenMM"
+        shell: bash -l {0}
+        run: |
+          cd openmm/build
+          make -j4 install
+          make -j4 PythonInstall
+
+      - name: "Build wheel"
+        shell: bash -l {0}
+        run: |
+          cd openmm/build
+          make PythonBdistWheel
+          export DYLD_LIBRARY_PATH=${HOME}/openmm-install/lib
+          cd python/dist
+          python -m delocate.cmd.delocate_wheel -w fixed -v *.whl -L "../OpenMM.libs/lib"
+          python ${{ github.workspace }}/devtools/scripts/add_plugins_and_headers.py "${HOME}/openmm-install"
+
+      - name: "Test the wheel"
+        shell: bash -l {0}
+        run: |
+          set -x
+          python -m venv "${HOME}/test_env"
+          source "${HOME}/test_env/bin/activate"
+          cd openmm/build/python/dist
+          pip install fixed/*
+          python -m openmm.testInstallation
+          python -c "import openmm as mm; print(mm.version.openmm_library_path)"
+          python -c "import openmm as mm; print('---Loaded---', *mm.pluginLoadedLibNames, '---Failed---', *mm.Platform.getPluginLoadFailures(), sep='\n')"
+
+      - name: "Upload the wheel"
+        uses: actions/upload-artifact@v4
+        with:
+          name: openmm-wheel
+          path: openmm/build/python/dist/fixed
+          retention-days: 3
