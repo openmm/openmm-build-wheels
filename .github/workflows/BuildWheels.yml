@@ -14,6 +14,8 @@ on:
 jobs:
   build-wheels:
     runs-on: ${{ matrix.os }}
+    container:
+      image: quay.io/pypa/manylinux2014_x86_64
     name: ${{ matrix.name }}
     strategy:
       matrix:
@@ -24,7 +26,7 @@ jobs:
 #            requirements: macos
 
           - name: Linux x86
-            runs-on: ubuntu-latest
+            os: ubuntu-latest
             container:
               image: quay.io/pypa/manylinux2014_x86_64
             requirements: linux
