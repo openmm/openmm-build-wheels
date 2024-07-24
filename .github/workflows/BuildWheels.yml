@@ -19,12 +19,11 @@ jobs:
       matrix:
         python-version: ["3.10"]
         include:
-          - name: MacOS ARM
-            os: macos-latest
-            requirements: macos
+#          - name: MacOS ARM
+#            os: macos-latest
+#            requirements: macos
 
           - name: Linux x86
-            os: ubuntu-latest
             runs-on: ubuntu-latest
             container:
               image: quay.io/pypa/manylinux2014_x86_64
@@ -77,15 +76,13 @@ jobs:
           cmake .. \
             -DCMAKE_INSTALL_PREFIX=${HOME}/openmm-install \
             -DCMAKE_CXX_FLAGS='-D_GLIBCXX_USE_CXX11_ABI=0' \
-            -DCMAKE_CXX_FLAGS_RELEASE='-D_GLIBCXX_USE_CXX11_ABI=0' \
             ${{ matrix.CMAKE_FLAGS }}
-          cat CMakeCache.txt
 
       - name: "Build OpenMM"
         shell: bash -l {0}
         run: |
           cd openmm/build
-          make -j4 --trace install
+          make -j4 install
           make -j4 PythonInstall
 
       - name: "Build wheel (Mac)"
