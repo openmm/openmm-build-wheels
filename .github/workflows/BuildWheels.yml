@@ -66,6 +66,10 @@ jobs:
           git clone https://github.com/openmm/openmm.git
           cd openmm
           git checkout $GIT_REVISION
+          pwd
+          ls
+          echo $HOME
+          echo ${{ github.workspace }}
           git apply ${{ github.workspace }}/devtools/patches/library_path.patch
           git apply ${{ github.workspace }}/devtools/patches/bdist_wheel.patch
 
