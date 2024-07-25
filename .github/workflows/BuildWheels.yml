@@ -64,12 +64,18 @@ jobs:
       - name: "Check out OpenMM source code"
         run: |
           git clone https://github.com/openmm/openmm.git
+          echo "   -- HOME"
+          ls $HOME
+          echo "   -- workspace"
+          ls ${{ github.workspace }}
+          echo "   -- /github/home"
+          ls /github/home
+          echo "   -- /home/runner/work"
+          ls /home/runner/work
+          echo "   -- /home/runner/work/openmm-build-wheels"
+          ls /home/runner/work/openmm-build-wheels
           cd openmm
           git checkout $GIT_REVISION
-          pwd
-          ls
-          echo $HOME
-          echo ${{ github.workspace }}
           git apply ${{ github.workspace }}/devtools/patches/library_path.patch
           git apply ${{ github.workspace }}/devtools/patches/bdist_wheel.patch
 
