@@ -66,8 +66,8 @@ jobs:
           git clone https://github.com/openmm/openmm.git
           echo "   -- HOME"
           ls $HOME
-          echo "   -- workspace"
-          ls ${{ github.workspace }}
+          #echo "   -- workspace"
+          #ls ${{ github.workspace }}
           echo "   -- /github/home"
           ls /github/home
           echo "   -- /home/runner/work"
