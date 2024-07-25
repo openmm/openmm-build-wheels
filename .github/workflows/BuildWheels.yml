@@ -70,10 +70,12 @@ jobs:
           #ls ${{ github.workspace }}
           echo "   -- /github/home"
           ls /github/home
-          echo "   -- /home/runner/work"
-          ls /home/runner/work
-          echo "   -- /home/runner/work/openmm-build-wheels"
-          ls /home/runner/work/openmm-build-wheels
+          echo "   -- /__w/openmm-build-wheels/openmm-build-wheels"
+          ls /__w/openmm-build-wheels/openmm-build-wheels
+          echo "   -- /__w/openmm-build-wheels"
+          ls /__w/openmm-build-wheels
+          echo "   -- /__w"
+          ls /__w
           cd openmm
           git checkout $GIT_REVISION
           git apply ${{ github.workspace }}/devtools/patches/library_path.patch
