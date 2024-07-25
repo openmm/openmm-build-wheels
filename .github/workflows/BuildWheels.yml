@@ -132,22 +132,10 @@ jobs:
       - name: "Check out OpenMM source code"
         run: |
           git clone https://github.com/openmm/openmm.git
-          echo "   -- HOME"
-          ls $HOME
-          #echo "   -- workspace"
-          #ls ${{ github.workspace }}
-          echo "   -- /github/home"
-          ls /github/home
-          echo "   -- /__w/openmm-build-wheels/openmm-build-wheels"
-          ls /__w/openmm-build-wheels/openmm-build-wheels
-          echo "   -- /__w/openmm-build-wheels"
-          ls /__w/openmm-build-wheels
-          echo "   -- /__w"
-          ls /__w
           cd openmm
           git checkout $GIT_REVISION
-          git apply /__w/openmm-build-wheels/openmm-build-wheels/devtools/patches/library_path.patch
-          git apply /__w/openmm-build-wheels/openmm-build-wheels/devtools/patches/bdist_wheel.patch
+          git apply $GITHUB_WORKSPACE/devtools/patches/library_path.patch
+          git apply $GITHUB_WORKSPACE/devtools/patches/bdist_wheel.patch
 
       - name: "Configure build with CMake"
         shell: bash -l {0}
@@ -177,8 +165,8 @@ jobs:
           pip install auditwheel-symbols
           auditwheel show *.whl
           auditwheel-symbols --manylinux 2014 *.whl
-          auditwheel repair -w fixed -L "../OpenMM.libs/lib" *.whl
-          python /__w/openmm-build-wheels/openmm-build-wheels/devtools/scripts/add_plugins_and_headers.py "${HOME}/openmm-install"
+          auditwheel repair -w fixed -L "/../OpenMM.libs/lib" *.whl
+          python $GITHUB_WORKSPACE/devtools/scripts/add_plugins_and_headers.py "${HOME}/openmm-install"
 
       - name: "Test the wheel"
         shell: bash -l {0}
