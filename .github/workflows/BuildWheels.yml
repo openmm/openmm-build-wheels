@@ -78,7 +78,7 @@ jobs:
           make PythonBdistWheel
           export DYLD_LIBRARY_PATH=${HOME}/openmm-install/lib
           cd python/dist
-          python -m delocate.cmd.delocate_wheel -w fixed -v *.whl -L "../OpenMM.libs/lib"
+          python -m delocate.cmd.delocate_wheel -w fixed -v *.whl -L ".libs/lib"
           python ${{ github.workspace }}/devtools/scripts/add_plugins_and_headers.py "${HOME}/openmm-install"
 
       - name: "Test the wheel"
@@ -165,7 +165,7 @@ jobs:
           pip install auditwheel-symbols
           auditwheel show *.whl
           auditwheel-symbols --manylinux 2014 *.whl
-          auditwheel repair -w fixed -L "/../OpenMM.libs/lib" *.whl
+          auditwheel repair -w fixed -L ".libs/lib" *.whl
           python $GITHUB_WORKSPACE/devtools/scripts/add_plugins_and_headers.py "${HOME}/openmm-install"
 
       - name: "Test the wheel"
