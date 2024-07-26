@@ -1,0 +1,13 @@
+diff --git a/wrappers/python/setup.py b/wrappers/python/setup.py
+index d2a147065..b3f65c5c6 100644
+--- a/wrappers/python/setup.py
++++ b/wrappers/python/setup.py
+@@ -189,7 +189,7 @@ def buildKeywordDictionary(major_version_num=MAJOR_VERSION_NUM,
+     if not openmm_lib_path:
+         reportError("Set OPENMM_LIB_PATH to point to the lib directory for OpenMM")
+
+-    extra_compile_args=['-std=c++11']
++    extra_compile_args=['-std=c++11 -D_GLIBCXX_USE_CXX11_ABI=0']
+     extra_link_args=[]
+     if platform.system() == "Windows":
+         define_macros.append( ('WIN32', None) )

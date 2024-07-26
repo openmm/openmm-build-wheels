@@ -136,6 +136,7 @@ jobs:
           git checkout $GIT_REVISION
           git apply $GITHUB_WORKSPACE/devtools/patches/library_path.patch
           git apply $GITHUB_WORKSPACE/devtools/patches/bdist_wheel.patch
+          git apply $GITHUB_WORKSPACE/devtools/patches/cxx11_abi.patch
 
       - name: "Configure build with CMake"
         shell: bash -l {0}
