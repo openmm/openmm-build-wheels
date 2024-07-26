@@ -19,9 +19,9 @@ jobs:
       matrix:
         python-version: ["3.10"]
         include:
-          - name: MacOS ARM
-            os: macos-latest
-            requirements: macos
+          #- name: MacOS ARM
+          #  os: macos-latest
+          #  requirements: macos
 
     steps:
       - uses: actions/checkout@v4
@@ -113,7 +113,7 @@ jobs:
             requirements: linux
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v1
 
       - uses: mamba-org/setup-micromamba@v1
         with:
