@@ -127,7 +127,7 @@ jobs:
         run: pip install -v -r devtools/requirements/${{ matrix.requirements }}.txt
 
       - name: "Install Doxygen with yum"
-        run: yum -y install doxygen
+        run: yum -y install doxygen zip
 
       - name: "Check out OpenMM source code"
         run: |
@@ -167,9 +167,7 @@ jobs:
           auditwheel-symbols --manylinux 2014 *.whl
           mkdir OpenMM.libs
           mkdir OpenMM.libs/lib
-          echo "add to wheel"
           zip -r *.whl OpenMM.libs/lib
-          zipinfo *.whl
           auditwheel repair -w fixed -L ".libs/lib" --plat manylinux_2_28_x86_64 *.whl
           python $GITHUB_WORKSPACE/devtools/scripts/add_plugins_and_headers.py "${HOME}/openmm-install"
 
