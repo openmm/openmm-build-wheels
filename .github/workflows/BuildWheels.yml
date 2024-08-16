@@ -166,8 +166,10 @@ jobs:
           mkdir OpenMM.libs
           mkdir OpenMM.libs/lib
           zip -r *.whl OpenMM.libs/lib
-          python $GITHUB_WORKSPACE/devtools/scripts/add_plugins_and_headers.py "${HOME}/openmm-install"
           auditwheel repair -w fixed -L ".libs/lib" --plat manylinux_2_28_x86_64 *.whl
+          zipinfo *.whl
+          python $GITHUB_WORKSPACE/devtools/scripts/add_plugins_and_headers.py "${HOME}/openmm-install"
+          zipinfo fixed/*.whl
 
       - name: "Test the wheel"
         shell: bash -l {0}
