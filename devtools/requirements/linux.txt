@@ -5,3 +5,8 @@ numpy<2.0
 delocate
 wheel
 auditwheel
+nvidia-cuda-nvcc-cu12
+nvidia-cuda-nvrtc-cu12
+nvidia-cufft-cu12
+nvidia-opencl-cu12
+--extra-index-url https://pypi.ngc.nvidia.com
