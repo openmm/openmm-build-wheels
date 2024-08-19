@@ -127,7 +127,10 @@ jobs:
         run: pip install -v -r devtools/requirements/${{ matrix.requirements }}.txt
 
       - name: "Install dependencies with yum"
-        run: yum -y install doxygen zip opencl-headers ocl-icd
+        run: |
+          yum -y install doxygen zip opencl-headers ocl-icd
+          rpm -q opencl-headers
+          rpm -q ocl-icd
 
       - name: "Check out OpenMM source code"
         run: |
