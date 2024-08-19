@@ -124,9 +124,7 @@ jobs:
 
       - name: "Install dependencies"
         shell: bash -l {0}
-        run: |
-          pip install nvidia-pyindex
-          pip install -v -r devtools/requirements/${{ matrix.requirements }}.txt
+        run: pip install -v -r devtools/requirements/${{ matrix.requirements }}.txt
 
       - name: "Install Doxygen with yum"
         run: yum -y install doxygen zip
