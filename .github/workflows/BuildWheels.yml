@@ -122,12 +122,12 @@ jobs:
             python=${{ matrix.python-version }}
           init-shell: bash
 
-      - name: "Install dependencies"
+      - name: "Install dependencies with pip"
         shell: bash -l {0}
         run: pip install -v -r devtools/requirements/${{ matrix.requirements }}.txt
 
-      - name: "Install Doxygen with yum"
-        run: yum -y install doxygen zip
+      - name: "Install dependencies with yum"
+        run: yum -y install doxygen zip opencl-headers ocl-icd
 
       - name: "Check out OpenMM source code"
         run: |
