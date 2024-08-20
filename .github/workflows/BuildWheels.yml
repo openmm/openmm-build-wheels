@@ -150,6 +150,9 @@ jobs:
           cmake .. \
             -DCMAKE_INSTALL_PREFIX=${HOME}/openmm-install \
             -DCMAKE_CXX_FLAGS='-D_GLIBCXX_USE_CXX11_ABI=0' \
+            -DOPENMM_BUILD_OPENCL_LIB=ON \
+            -DOPENCL_INCLUDE_DIR=/usr/include/CL \
+            -DOPENCL_LIBRARY=/usr/lib64/libOpenCL.so.1 \
             ${{ matrix.CMAKE_FLAGS }}
 
       - name: "Build OpenMM"
