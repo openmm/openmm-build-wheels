@@ -111,6 +111,8 @@ jobs:
           - name: Linux x86
             os: ubuntu-latest
             requirements: linux
+            cuda-version: "12-3"
+            cuda-arch: "x86_64"
 
     steps:
       - uses: actions/checkout@v3
@@ -129,8 +131,13 @@ jobs:
       - name: "Install dependencies with yum"
         run: |
           yum -y install doxygen zip opencl-headers ocl-icd
-          rpm -ql opencl-headers
-          rpm -ql ocl-icd
+
+      - name: "Install CUDA"
+        run: |
+          dnf config-manager --add-repo https://developer.download.nvidia.com/compute/cuda/repos/rhel8/${{ matrix.cuda-arch }}/cuda-rhel8.repo
+          dnf -y install cuda-compiler-${{ matrix.cuda-version }}.${{ matrix.cuda-arch }} \
+                         cuda-libraries-${{ matrix.cuda-version }}.${{ matrix.cuda-arch }} \
+                         cuda-libraries-devel-${{ matrix.cuda-version }}.${{ matrix.cuda-arch }}
 
       - name: "Check out OpenMM source code"
         run: |
