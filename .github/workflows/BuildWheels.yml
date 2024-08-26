@@ -78,8 +78,8 @@ jobs:
           make PythonBdistWheel
           export DYLD_LIBRARY_PATH=${HOME}/openmm-install/lib
           cd python/dist
-          python ${{ github.workspace }}/devtools/scripts/add_plugins_and_headers.py "${HOME}/openmm-install"
           python -m delocate.cmd.delocate_wheel -w fixed -v *.whl -L "../OpenMM.libs/lib"
+          python ${{ github.workspace }}/devtools/scripts/add_plugins_and_headers.py "${HOME}/openmm-install"
 
       - name: "Test the wheel"
         shell: bash -l {0}
@@ -176,9 +176,6 @@ jobs:
           make PythonBdistWheel
           export LD_LIBRARY_PATH=${HOME}/openmm-install/lib
           cd python/dist
-          #mkdir OpenMM.libs
-          #mkdir OpenMM.libs/lib
-          #zip -r *.whl OpenMM.libs/lib
           python $GITHUB_WORKSPACE/devtools/scripts/add_plugins_and_headers.py "${HOME}/openmm-install"
           auditwheel repair -w fixed -L ".libs/lib" --plat manylinux_2_28_x86_64 *.whl \
             --exclude libOpenMM.so \
