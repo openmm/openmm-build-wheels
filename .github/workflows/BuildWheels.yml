@@ -273,7 +273,8 @@ jobs:
                 -DCMAKE_CXX_COMPILER=cl.exe ^
                 -DCMAKE_C_COMPILER=cl.exe ^
                 -DOPENCL_INCLUDE_DIR=%CONDA_PREFIX%/Library/include ^
-                -DOPENCL_LIBRARY=%CONDA_PREFIX%/Library/lib/OpenCL.lib
+                -DOPENCL_LIBRARY=%CONDA_PREFIX%/Library/lib/OpenCL.lib ^
+                ..
 
       - name: "Build OpenMM"
         shell: bash -l {0}
