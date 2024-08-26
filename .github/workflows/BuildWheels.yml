@@ -60,9 +60,7 @@ jobs:
           cd openmm
           mkdir build
           cd build
-          cmake .. \
-            -DCMAKE_INSTALL_PREFIX=${HOME}/openmm-install \
-            ${{ matrix.CMAKE_FLAGS }}
+          cmake .. -DCMAKE_INSTALL_PREFIX=${HOME}/openmm-install
 
       - name: "Build OpenMM"
         shell: bash -l {0}
@@ -167,8 +165,7 @@ jobs:
             -DCMAKE_CXX_FLAGS='-D_GLIBCXX_USE_CXX11_ABI=0' \
             -DOPENMM_BUILD_OPENCL_LIB=ON \
             -DOPENCL_INCLUDE_DIR=/usr/include/CL \
-            -DOPENCL_LIBRARY=/usr/lib64/libOpenCL.so.1 \
-            ${{ matrix.CMAKE_FLAGS }}
+            -DOPENCL_LIBRARY=/usr/lib64/libOpenCL.so.1
 
       - name: "Build OpenMM"
         shell: bash -l {0}
@@ -217,3 +214,70 @@ jobs:
           name: openmm-wheel
           path: openmm/build/python/dist/fixed
           retention-days: 3
+
+  windows:
+    runs-on: ${{ matrix.os }}
+    name: ${{ matrix.name }}
+    strategy:
+      matrix:
+        python-version: ["3.10"]
+        include:
+          - name: Windows x86
+            os: windows-latest
+            requirements: windows
+#            cuda-version: "12-3"
+#            cuda-arch: "x86_64"
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: mamba-org/setup-micromamba@v1
+        with:
+          environment-name: build-env
+          create-args: >-
+            python=${{ matrix.python-version }}
+          init-shell: bash cmd powershell
+
+      - name: "Install dependencies with pip"
+        shell: cmd /C call {0}
+        run: pip install -v -r devtools/requirements/${{ matrix.requirements }}.txt
+
+      - name: "Install dependencies with choco"
+        uses: crazy-max/ghaction-chocolatey@v3
+        with:
+          args:
+            install doxygen.install cuda
+
+      - name: "Check out OpenMM source code"
+        shell: cmd /C call {0}
+        run: |
+          git clone https://github.com/openmm/openmm.git
+          cd openmm
+          git checkout %GIT_REVISION%
+          git apply %GITHUB_WORKSPACE%/devtools/patches/library_path.patch
+          git apply %GITHUB_WORKSPACE%/devtools/patches/bdist_wheel.patch
+          git apply %GITHUB_WORKSPACE%/devtools/patches/cxx11_abi.patch
+
+      - name: "Configure build with CMake"
+        shell: bash -l {0}
+        run: |
+          call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
+          cd openmm
+          mkdir build
+          cd build
+          cmake -G "NMake Makefiles JOM" ^
+                -DCMAKE_BUILD_TYPE=Release ^
+                -DCMAKE_INSTALL_PREFIX=%HOME%/openmm-install ^
+                -DCMAKE_PREFIX_PATH=%CONDA_PREFIX%/Library ^
+                -DCMAKE_CXX_COMPILER=cl.exe ^
+                -DCMAKE_C_COMPILER=cl.exe ^
+                -DOPENCL_INCLUDE_DIR=%CONDA_PREFIX%/Library/include ^
+                -DOPENCL_LIBRARY=%CONDA_PREFIX%/Library/lib/OpenCL.lib
+
+      - name: "Build OpenMM"
+        shell: bash -l {0}
+        run: |
+          call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
+          cd openmm\build
+          jom -j 4 install
+          jom -j 4 PythonInstall
