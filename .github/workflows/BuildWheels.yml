@@ -79,7 +79,7 @@ jobs:
           export DYLD_LIBRARY_PATH=${HOME}/openmm-install/lib
           cd python/dist
           python ${{ github.workspace }}/devtools/scripts/add_plugins_and_headers.py "${HOME}/openmm-install"
-          python -m delocate.cmd.delocate_wheel -w fixed -v *.whl -L "../OpenMM.libs/lib" --sanitize_rpaths \
+          python -m delocate.cmd.delocate_wheel -w fixed -v *.whl -L "../OpenMM.libs/lib" --sanitize-rpaths \
             --exclude libOpenMM.dylib \
             --exclude libOpenMMOpenCL.dylib \
             --exclude libOpenMMDrude.dylib \
