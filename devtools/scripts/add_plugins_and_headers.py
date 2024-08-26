@@ -5,8 +5,8 @@ import shutil
 import sys
 
 install_dir = sys.argv[1]
-for filename in os.listdir('fixed'):
-    path = os.path.join('fixed', filename)
-    with wheeltools.InWheel(path, path):
-        shutil.copytree(join(install_dir, 'lib', 'plugins'), 'OpenMM.libs/lib/plugins')
-        shutil.copytree(join(install_dir, 'include'), 'OpenMM.libs/include')
+for filename in os.listdir('.'):
+    if filename.endswith('.whl'):
+        with wheeltools.InWheel(filename, filename):
+            shutil.copytree(join(install_dir, 'lib'), 'OpenMM.libs/lib', dirs_exist_ok=True)
+            shutil.copytree(join(install_dir, 'include'), 'OpenMM.libs/include', dirs_exist_ok=True)

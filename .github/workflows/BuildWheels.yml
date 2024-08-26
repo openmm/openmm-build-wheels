@@ -12,7 +12,7 @@ on:
       - "main"
 
 jobs:
-  unix:
+  mac:
     runs-on: ${{ matrix.os }}
     name: ${{ matrix.name }}
     strategy:
@@ -26,11 +26,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-#      - uses: actions/setup-python@v5
-#        name: "Install Python"
-#        with:
-#          python-version: ${{ matrix.python-version }}
-
       - uses: mamba-org/setup-micromamba@v1
         with:
           environment-name: build-env
@@ -43,15 +38,12 @@ jobs:
         run: pip install -v -r devtools/requirements/${{ matrix.requirements }}.txt
 
       - name: "Install Homebrew"
-        if: startsWith(matrix.os, 'macos')
         uses: Homebrew/actions/setup-homebrew@master
 
-      - name: "Install Doxygen"
-        if: startsWith(matrix.os, 'macos')
+      - name: "Install Doxygen with brew"
         run: brew install doxygen
 
       - name: "Set SDK on MacOS (if needed)"
-        if: startsWith(matrix.os, 'macos')
         run: source devtools/scripts/install_macos_sdk.sh
 
       - name: "Check out OpenMM source code"
@@ -86,8 +78,126 @@ jobs:
           make PythonBdistWheel
           export DYLD_LIBRARY_PATH=${HOME}/openmm-install/lib
           cd python/dist
-          python -m delocate.cmd.delocate_wheel -w fixed -v *.whl -L "../OpenMM.libs/lib"
           python ${{ github.workspace }}/devtools/scripts/add_plugins_and_headers.py "${HOME}/openmm-install"
+          python -m delocate.cmd.delocate_wheel -w fixed -v *.whl -L "../OpenMM.libs/lib" --sanitize-rpaths \
+            --exclude libOpenMM.dylib \
+            --exclude libOpenMMOpenCL.dylib \
+            --exclude libOpenMMDrude.dylib \
+            --exclude libOpenMMDrudeOpenCL.dylib \
+            --exclude libOpenMMAmoeba.dylib \
+            --exclude libOpenMMAmoebaOpenCL.dylib \
+            --exclude libOpenMMRPMD.dylib \
+            --exclude libOpenMMRPMDOpenCL.dylib
+
+      - name: "Test the wheel"
+        shell: bash -l {0}
+        run: |
+          set -x
+          python -m venv "${HOME}/test_env"
+          source "${HOME}/test_env/bin/activate"
+          cd openmm/build/python/dist
+          pip install fixed/*
+          python -m openmm.testInstallation
+          python -c "import openmm as mm; print('---Loaded---', *mm.pluginLoadedLibNames, '---Failed---', *mm.Platform.getPluginLoadFailures(), sep='\n')"
+
+      - name: "Upload the wheel"
+        uses: actions/upload-artifact@v4
+        with:
+          name: openmm-wheel
+          path: openmm/build/python/dist/fixed
+          retention-days: 3
+
+  linux:
+    runs-on: ${{ matrix.os }}
+    container:
+      image: quay.io/pypa/manylinux_2_28_x86_64
+    name: ${{ matrix.name }}
+    strategy:
+      matrix:
+        python-version: ["3.10"]
+        include:
+          - name: Linux x86
+            os: ubuntu-latest
+            requirements: linux
+            cuda-version: "12-3"
+            cuda-arch: "x86_64"
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: mamba-org/setup-micromamba@v1
+        with:
+          environment-name: build-env
+          create-args: >-
+            python=${{ matrix.python-version }}
+          init-shell: bash
+
+      - name: "Install dependencies with pip"
+        shell: bash -l {0}
+        run: pip install -v -r devtools/requirements/${{ matrix.requirements }}.txt
+
+      - name: "Install dependencies with yum"
+        run: |
+          yum -y install doxygen zip opencl-headers ocl-icd
+
+      - name: "Install CUDA"
+        run: |
+          dnf config-manager --add-repo https://developer.download.nvidia.com/compute/cuda/repos/rhel8/${{ matrix.cuda-arch }}/cuda-rhel8.repo
+          dnf -y install cuda-compiler-${{ matrix.cuda-version }}.${{ matrix.cuda-arch }} \
+                         cuda-libraries-${{ matrix.cuda-version }}.${{ matrix.cuda-arch }} \
+                         cuda-libraries-devel-${{ matrix.cuda-version }}.${{ matrix.cuda-arch }}
+
+      - name: "Check out OpenMM source code"
+        run: |
+          git clone https://github.com/openmm/openmm.git
+          cd openmm
+          git checkout $GIT_REVISION
+          git apply $GITHUB_WORKSPACE/devtools/patches/library_path.patch
+          git apply $GITHUB_WORKSPACE/devtools/patches/bdist_wheel.patch
+          git apply $GITHUB_WORKSPACE/devtools/patches/cxx11_abi.patch
+
+      - name: "Configure build with CMake"
+        shell: bash -l {0}
+        run: |
+          cd openmm
+          mkdir build
+          cd build
+          cmake .. \
+            -DCMAKE_INSTALL_PREFIX=${HOME}/openmm-install \
+            -DCMAKE_CXX_FLAGS='-D_GLIBCXX_USE_CXX11_ABI=0' \
+            -DOPENMM_BUILD_OPENCL_LIB=ON \
+            -DOPENCL_INCLUDE_DIR=/usr/include/CL \
+            -DOPENCL_LIBRARY=/usr/lib64/libOpenCL.so.1 \
+            ${{ matrix.CMAKE_FLAGS }}
+
+      - name: "Build OpenMM"
+        shell: bash -l {0}
+        run: |
+          cd openmm/build
+          make -j4 install
+          make -j4 PythonInstall
+
+      - name: "Build wheel"
+        shell: bash -l {0}
+        run: |
+          cd openmm/build
+          make PythonBdistWheel
+          export LD_LIBRARY_PATH=${HOME}/openmm-install/lib
+          cd python/dist
+          python $GITHUB_WORKSPACE/devtools/scripts/add_plugins_and_headers.py "${HOME}/openmm-install"
+          auditwheel repair -w fixed -L ".libs/lib" --plat manylinux_2_28_x86_64 *.whl \
+            --exclude libOpenMM.so \
+            --exclude libOpenMMCUDA.so \
+            --exclude libOpenMMOpenCL.so \
+            --exclude libOpenMMDrude.so \
+            --exclude libOpenMMAmoeba.so \
+            --exclude libOpenMMRPMD.so \
+            --exclude libOpenCL.so.1 \
+            --exclude libcuda.so.1 \
+            --exclude libcufft.so.11 \
+            --exclude libcufft.so.10 \
+            --exclude libnvrtc.so.11.2 \
+            --exclude libnvrtc.so.12
 
       - name: "Test the wheel"
         shell: bash -l {0}

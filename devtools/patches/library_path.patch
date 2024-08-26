@@ -13,7 +13,7 @@ index d2a147065..31a621562 100644
  git_revision = '%(git_revision)s'
  release = %(isrelease)s
 -openmm_library_path = r'%(path)s'
-+openmm_library_path = os.path.join(os.path.dirname(__file__), "..", "OpenMM.libs", "lib")
++openmm_library_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "OpenMM.libs", "lib"))
 
  if not release:
      version = full_version
