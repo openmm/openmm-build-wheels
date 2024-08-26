@@ -260,7 +260,7 @@ jobs:
           git apply %GITHUB_WORKSPACE%\devtools\patches\cxx11_abi.patch
 
       - name: "Configure build with CMake"
-        shell: bash -l {0}
+        shell: cmd /C call {0}
         run: |
           call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
           cd openmm
@@ -277,7 +277,7 @@ jobs:
                 ..
 
       - name: "Build OpenMM"
-        shell: bash -l {0}
+        shell: cmd /C call {0}
         run: |
           call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
           cd openmm\build
