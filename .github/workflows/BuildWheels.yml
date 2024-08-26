@@ -236,7 +236,7 @@ jobs:
           environment-name: build-env
           create-args: >-
             python=${{ matrix.python-version }}
-          init-shell: bash cmd powershell
+          init-shell: bash cmd.exe powershell
 
       - name: "Install dependencies with pip"
         shell: cmd /C call {0}
