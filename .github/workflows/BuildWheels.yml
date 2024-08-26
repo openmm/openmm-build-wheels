@@ -246,8 +246,8 @@ jobs:
         uses: crazy-max/ghaction-chocolatey@v3
         with:
           args:
-            install doxygen.install
-#            install doxygen.install cuda
+            install doxygen.install jom
+#            install doxygen.install jom cuda
 
       - name: "Check out OpenMM source code"
         shell: cmd /C call {0}
