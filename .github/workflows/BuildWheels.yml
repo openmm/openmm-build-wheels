@@ -78,8 +78,13 @@ jobs:
           make PythonBdistWheel
           export DYLD_LIBRARY_PATH=${HOME}/openmm-install/lib
           cd python/dist
-          python -m delocate.cmd.delocate_wheel -w fixed -v *.whl -L "../OpenMM.libs/lib"
           python ${{ github.workspace }}/devtools/scripts/add_plugins_and_headers.py "${HOME}/openmm-install"
+          python -m delocate.cmd.delocate_wheel -w fixed -v *.whl -L "../OpenMM.libs/lib" --sanitize_rpaths \
+            --exclude libOpenMM.dylib \
+            --exclude libOpenMMOpenCL.dylib \
+            --exclude libOpenMMDrude.dylib \
+            --exclude libOpenMMAmoeba.dylib \
+            --exclude libOpenMMRPMD.dylib
 
       - name: "Test the wheel"
         shell: bash -l {0}
