@@ -83,8 +83,11 @@ jobs:
             --exclude libOpenMM.dylib \
             --exclude libOpenMMOpenCL.dylib \
             --exclude libOpenMMDrude.dylib \
+            --exclude libOpenMMDrudeOpenCL.dylib \
             --exclude libOpenMMAmoeba.dylib \
-            --exclude libOpenMMRPMD.dylib
+            --exclude libOpenMMAmoebaOpenCL.dylib \
+            --exclude libOpenMMRPMD.dylib \
+            --exclude libOpenMMRPMDOpenCL.dylib
 
       - name: "Test the wheel"
         shell: bash -l {0}
