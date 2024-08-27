@@ -249,9 +249,17 @@ jobs:
             install doxygen.install jom
 #            install doxygen.install jom cuda
 
+      - name: "Install CUDA"
+        uses: Jimver/cuda-toolkit@v0.2.16
+        id: cuda-toolkit
+        with:
+          cuda: '12.5.0'
+
       - name: "Check out OpenMM source code"
         shell: cmd /C call {0}
         run: |
+          echo "Cuda install location: ${{steps.cuda-toolkit.outputs.CUDA_PATH}}"
+          dir ${{steps.cuda-toolkit.outputs.CUDA_PATH}}
           git clone https://github.com/openmm/openmm.git
           cd openmm
           git checkout %GIT_REVISION%
@@ -281,7 +289,6 @@ jobs:
         run: |
           call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
           cd openmm\build
-          jom -j 4
           jom -j 4 install
           jom -j 4 PythonInstall
 
