@@ -254,12 +254,13 @@ jobs:
         id: cuda-toolkit
         with:
           cuda: '12.5.0'
+          sub-packages: '["nvcc", "nvrtc", "nvrtc_dev", "cufft", "cufft_dev", "opencl"]'
 
       - name: "Check out OpenMM source code"
         shell: cmd /C call {0}
         run: |
           echo "Cuda install location: ${{steps.cuda-toolkit.outputs.CUDA_PATH}}"
-          dir "${{steps.cuda-toolkit.outputs.CUDA_PATH}}"
+          dir "${{steps.cuda-toolkit.outputs.CUDA_PATH}}\lib"
           git clone https://github.com/openmm/openmm.git
           cd openmm
           git checkout %GIT_REVISION%
