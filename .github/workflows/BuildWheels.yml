@@ -298,13 +298,6 @@ jobs:
           make PythonBdistWheel
           cd python\dist
           python %GITHUB_WORKSPACE%\devtools\scripts\add_plugins_and_headers.py "%HOME%\openmm-install"
-#          delvewheel repair -w fixed -L ".libs/lib" *.whl ^
-#            --exclude OpenMM.dll ^
-#            --exclude OpenMMCUDA.dll ^
-#            --exclude OpenMMOpenCL.dll ^
-#            --exclude OpenMMDrude.dll ^
-#            --exclude OpenMMAmoeba.dll ^
-#            --exclude OpenMMRPMD.so
 
       - name: "Test the wheel"
         shell: cmd /C call {0}
@@ -313,7 +306,6 @@ jobs:
           source "$%HOME%\test_env\bin\activate"
           cd openmm\build\python\dist
           pip install *
-#          pip install fixed\*
           python -m openmm.testInstallation
           python -c "import openmm as mm; print(mm.version.openmm_library_path)"
           python -c "import openmm as mm; print('---Loaded---', *mm.pluginLoadedLibNames, '---Failed---', *mm.Platform.getPluginLoadFailures(), sep='\n')"
