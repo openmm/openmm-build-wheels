@@ -259,7 +259,7 @@ jobs:
         shell: cmd /C call {0}
         run: |
           echo "Cuda install location: ${{steps.cuda-toolkit.outputs.CUDA_PATH}}"
-          dir ${{steps.cuda-toolkit.outputs.CUDA_PATH}}
+          dir "${{steps.cuda-toolkit.outputs.CUDA_PATH}}"
           git clone https://github.com/openmm/openmm.git
           cd openmm
           git checkout %GIT_REVISION%
@@ -280,8 +280,8 @@ jobs:
                 -DCMAKE_PREFIX_PATH=%HOME%/openmm-install ^
                 -DCMAKE_CXX_COMPILER=cl.exe ^
                 -DCMAKE_C_COMPILER=cl.exe ^
-                -DOPENCL_INCLUDE_DIR=%CONDA_PREFIX%/Library/include ^
-                -DOPENCL_LIBRARY=%CONDA_PREFIX%/Library/lib/OpenCL.lib ^
+                -DOPENCL_INCLUDE_DIR="${{steps.cuda-toolkit.outputs.CUDA_PATH}}/include" ^
+                -DOPENCL_LIBRARY="${{steps.cuda-toolkit.outputs.CUDA_PATH}}/lib/OpenCL.lib" ^
                 ..
 
       - name: "Build OpenMM"
