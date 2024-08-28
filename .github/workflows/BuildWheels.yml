@@ -276,8 +276,8 @@ jobs:
           cd build
           cmake -G "NMake Makefiles JOM" ^
                 -DCMAKE_BUILD_TYPE=Release ^
-                -DCMAKE_INSTALL_PREFIX=%HOME%/openmm-install ^
-                -DCMAKE_PREFIX_PATH=%HOME%/openmm-install ^
+                -DCMAKE_INSTALL_PREFIX=%HOMEPATH%/openmm-install ^
+                -DCMAKE_PREFIX_PATH=%HOMEPATH%/openmm-install ^
                 -DCMAKE_CXX_COMPILER=cl.exe ^
                 -DCMAKE_C_COMPILER=cl.exe ^
                 -DOPENCL_INCLUDE_DIR="${{steps.cuda-toolkit.outputs.CUDA_PATH}}/include" ^
@@ -298,13 +298,13 @@ jobs:
           cd openmm\build
           jom PythonBdistWheel
           cd python\dist
-          python %GITHUB_WORKSPACE%\devtools\scripts\add_plugins_and_headers.py "%HOME%\openmm-install"
+          python %GITHUB_WORKSPACE%\devtools\scripts\add_plugins_and_headers.py "%HOMEPATH%\openmm-install"
 
       - name: "Test the wheel"
         shell: cmd /C call {0}
         run: |
-          python -m venv "%HOME%\test_env"
-          source "$%HOME%\test_env\bin\activate"
+          python -m venv "%HOMEPATH%\test_env"
+          source "$%HOMEPATH%\test_env\bin\activate"
           cd openmm\build\python\dist
           pip install *
           python -m openmm.testInstallation
