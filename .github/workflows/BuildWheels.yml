@@ -305,7 +305,8 @@ jobs:
         run: |
           python -m venv "%USERPROFILE%\test_env"
           cd openmm\build\python\dist
-          %USERPROFILE%\test_env\Scripts\pip install *
+          dir
+          %USERPROFILE%\test_env\Scripts\pip install *.whl
           %USERPROFILE%\test_env\Scripts\python -m openmm.testInstallation
           %USERPROFILE%\test_env\Scripts\python -c "import openmm as mm; print(mm.version.openmm_library_path)"
           %USERPROFILE%\test_env\Scripts\python -c "import openmm as mm; print('---Loaded---', *mm.pluginLoadedLibNames, '---Failed---', *mm.Platform.getPluginLoadFailures(), sep='\n')"
