@@ -253,6 +253,7 @@ jobs:
         id: cuda-toolkit
         with:
           cuda: '12.5.0'
+          method: 'network'
           sub-packages: '["nvcc", "nvrtc", "nvrtc_dev", "cufft", "cufft_dev", "opencl"]'
 
       - name: "Check out OpenMM source code"
@@ -295,7 +296,7 @@ jobs:
         shell: cmd /C call {0}
         run: |
           cd openmm\build
-          make PythonBdistWheel
+          jom PythonBdistWheel
           cd python\dist
           python %GITHUB_WORKSPACE%\devtools\scripts\add_plugins_and_headers.py "%HOME%\openmm-install"
 
