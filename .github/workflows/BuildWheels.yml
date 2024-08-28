@@ -240,7 +240,9 @@ jobs:
 
       - name: "Install dependencies with pip"
         shell: cmd /C call {0}
-        run: pip install -v -r devtools/requirements/${{ matrix.requirements }}.txt
+        run: |
+          set
+          pip install -v -r devtools/requirements/${{ matrix.requirements }}.txt
 
       - name: "Install dependencies with choco"
         uses: crazy-max/ghaction-chocolatey@v3
