@@ -303,17 +303,12 @@ jobs:
       - name: "Test the wheel"
         shell: cmd /C call {0}
         run: |
-          echo "****a"
           python -m venv "%USERPROFILE%\test_env"
-          echo "****b"
-          %USERPROFILE%\test_env\Scripts\activate.bat
-          echo "****c"
           cd openmm\build\python\dist
-          echo "****d"
-          pip install *
-          python -m openmm.testInstallation
-          python -c "import openmm as mm; print(mm.version.openmm_library_path)"
-          python -c "import openmm as mm; print('---Loaded---', *mm.pluginLoadedLibNames, '---Failed---', *mm.Platform.getPluginLoadFailures(), sep='\n')"
+          %USERPROFILE%\test_env\Scripts\pip install *
+          %USERPROFILE%\test_env\Scripts\python -m openmm.testInstallation
+          %USERPROFILE%\test_env\Scripts\python -c "import openmm as mm; print(mm.version.openmm_library_path)"
+          %USERPROFILE%\test_env\Scripts\python -c "import openmm as mm; print('---Loaded---', *mm.pluginLoadedLibNames, '---Failed---', *mm.Platform.getPluginLoadFailures(), sep='\n')"
 
       - name: "Upload the wheel"
         uses: actions/upload-artifact@v4
