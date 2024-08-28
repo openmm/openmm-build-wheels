@@ -240,9 +240,7 @@ jobs:
 
       - name: "Install dependencies with pip"
         shell: cmd /C call {0}
-        run: |
-          set
-          pip install -v -r devtools/requirements/${{ matrix.requirements }}.txt
+        run: pip install -v -r devtools/requirements/${{ matrix.requirements }}.txt
 
       - name: "Install dependencies with choco"
         uses: crazy-max/ghaction-chocolatey@v3
@@ -306,7 +304,7 @@ jobs:
         shell: cmd /C call {0}
         run: |
           python -m venv "%USERPROFILE%\test_env"
-          source "$%USERPROFILE%\test_env\bin\activate"
+          %USERPROFILE%\test_env\Scripts\activate.bat
           cd openmm\build\python\dist
           pip install *
           python -m openmm.testInstallation
