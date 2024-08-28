@@ -303,9 +303,13 @@ jobs:
       - name: "Test the wheel"
         shell: cmd /C call {0}
         run: |
+          echo "****a"
           python -m venv "%USERPROFILE%\test_env"
+          echo "****b"
           %USERPROFILE%\test_env\Scripts\activate.bat
+          echo "****c"
           cd openmm\build\python\dist
+          echo "****d"
           pip install *
           python -m openmm.testInstallation
           python -c "import openmm as mm; print(mm.version.openmm_library_path)"
