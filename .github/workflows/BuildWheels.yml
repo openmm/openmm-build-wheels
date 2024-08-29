@@ -308,7 +308,7 @@ jobs:
           echo "A"
           %USERPROFILE%\test_env\Scripts\pip show numpy
           echo "B"
-          %USERPROFILE%\test_env\Scripts\pip install numpy
+          %USERPROFILE%\test_env\Scripts\pip install numpy<2
           echo "C"
           %USERPROFILE%\test_env\Scripts\pip show numpy
           echo "D"
