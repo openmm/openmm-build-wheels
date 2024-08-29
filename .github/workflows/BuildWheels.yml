@@ -305,7 +305,9 @@ jobs:
         run: |
           python -m venv "%USERPROFILE%\test_env"
           cd openmm\build\python\dist
-          FOR %%i in (*.whl) DO %USERPROFILE%\test_env\Scripts\pip install %i
+          %USERPROFILE%\test_env\Scripts\pip show --find-links . openmm
+          %USERPROFILE%\test_env\Scripts\pip install "numpy<2"
+          %USERPROFILE%\test_env\Scripts\pip install --find-links . openmm
           %USERPROFILE%\test_env\Scripts\python -m openmm.testInstallation
           %USERPROFILE%\test_env\Scripts\python -c "import openmm as mm; print(mm.version.openmm_library_path)"
           %USERPROFILE%\test_env\Scripts\python -c "import openmm as mm; print('---Loaded---', *mm.pluginLoadedLibNames, '---Failed---', *mm.Platform.getPluginLoadFailures(), sep='\n')"
