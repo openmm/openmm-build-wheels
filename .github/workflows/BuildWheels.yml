@@ -305,9 +305,17 @@ jobs:
         run: |
           python -m venv "%USERPROFILE%\test_env"
           cd openmm\build\python\dist
+          echo "A"
           %USERPROFILE%\test_env\Scripts\pip show numpy
+          echo "B"
+          %USERPROFILE%\test_env\Scripts\pip install numpy
+          echo "C"
+          %USERPROFILE%\test_env\Scripts\pip show numpy
+          echo "D"
           %USERPROFILE%\test_env\Scripts\pip install --find-links . openmm
+          echo "E"
           %USERPROFILE%\test_env\Scripts\pip show numpy
+          echo "F"
           %USERPROFILE%\test_env\Scripts\python -m openmm.testInstallation
           %USERPROFILE%\test_env\Scripts\python -c "import openmm as mm; print(mm.version.openmm_library_path)"
           %USERPROFILE%\test_env\Scripts\python -c "import openmm as mm; print('---Loaded---', *mm.pluginLoadedLibNames, '---Failed---', *mm.Platform.getPluginLoadFailures(), sep='\n')"
