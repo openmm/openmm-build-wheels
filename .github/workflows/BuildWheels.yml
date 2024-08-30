@@ -60,9 +60,7 @@ jobs:
           cd openmm
           mkdir build
           cd build
-          cmake .. \
-            -DCMAKE_INSTALL_PREFIX=${HOME}/openmm-install \
-            ${{ matrix.CMAKE_FLAGS }}
+          cmake .. -DCMAKE_INSTALL_PREFIX=${HOME}/openmm-install
 
       - name: "Build OpenMM"
         shell: bash -l {0}
@@ -103,7 +101,7 @@ jobs:
       - name: "Upload the wheel"
         uses: actions/upload-artifact@v4
         with:
-          name: openmm-wheel
+          name: openmm-wheel-mac-${{matrix.python-version}}
           path: openmm/build/python/dist/fixed
           retention-days: 3
 
@@ -167,8 +165,7 @@ jobs:
             -DCMAKE_CXX_FLAGS='-D_GLIBCXX_USE_CXX11_ABI=0' \
             -DOPENMM_BUILD_OPENCL_LIB=ON \
             -DOPENCL_INCLUDE_DIR=/usr/include/CL \
-            -DOPENCL_LIBRARY=/usr/lib64/libOpenCL.so.1 \
-            ${{ matrix.CMAKE_FLAGS }}
+            -DOPENCL_LIBRARY=/usr/lib64/libOpenCL.so.1
 
       - name: "Build OpenMM"
         shell: bash -l {0}
@@ -214,6 +211,107 @@ jobs:
       - name: "Upload the wheel"
         uses: actions/upload-artifact@v4
         with:
-          name: openmm-wheel
+          name: openmm-wheel-linux-${{matrix.python-version}}
           path: openmm/build/python/dist/fixed
+          retention-days: 3
+
+  windows:
+    runs-on: ${{ matrix.os }}
+    name: ${{ matrix.name }}
+    strategy:
+      matrix:
+        python-version: ["3.10"]
+        include:
+          - name: Windows x86
+            os: windows-latest
+            requirements: windows
+            cuda-version: "12.5.0"
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: mamba-org/setup-micromamba@v1
+        with:
+          environment-name: build-env
+          create-args: >-
+            python=${{ matrix.python-version }}
+          init-shell: bash cmd.exe powershell
+
+      - name: "Install dependencies with pip"
+        shell: cmd /C call {0}
+        run: pip install -v -r devtools/requirements/${{ matrix.requirements }}.txt
+
+      - name: "Install dependencies with choco"
+        uses: crazy-max/ghaction-chocolatey@v3
+        with:
+          args:
+            install doxygen.install jom
+
+      - name: "Install CUDA"
+        uses: Jimver/cuda-toolkit@v0.2.16
+        id: cuda-toolkit
+        with:
+          cuda: ${{matrix.cuda-version}}
+          method: 'network'
+          sub-packages: '["nvcc", "nvrtc", "nvrtc_dev", "cufft", "cufft_dev", "opencl"]'
+
+      - name: "Check out OpenMM source code"
+        shell: cmd /C call {0}
+        run: |
+          git clone https://github.com/openmm/openmm.git
+          cd openmm
+          git checkout %GIT_REVISION%
+          git apply %GITHUB_WORKSPACE%\devtools\patches\library_path.patch
+          git apply %GITHUB_WORKSPACE%\devtools\patches\bdist_wheel.patch
+          git apply %GITHUB_WORKSPACE%\devtools\patches\cxx11_abi.patch
+
+      - name: "Configure build with CMake"
+        shell: cmd /C call {0}
+        run: |
+          call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
+          cd openmm
+          mkdir build
+          cd build
+          cmake -G "NMake Makefiles JOM" ^
+                -DCMAKE_BUILD_TYPE=Release ^
+                -DCMAKE_INSTALL_PREFIX=%USERPROFILE%/openmm-install ^
+                -DCMAKE_PREFIX_PATH=%USERPROFILE%/openmm-install ^
+                -DCMAKE_CXX_COMPILER=cl.exe ^
+                -DCMAKE_C_COMPILER=cl.exe ^
+                -DOPENCL_INCLUDE_DIR="${{steps.cuda-toolkit.outputs.CUDA_PATH}}/include" ^
+                -DOPENCL_LIBRARY="${{steps.cuda-toolkit.outputs.CUDA_PATH}}/lib/x64/OpenCL.lib" ^
+                ..
+
+      - name: "Build OpenMM"
+        shell: cmd /C call {0}
+        run: |
+          call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
+          cd openmm\build
+          jom -j 4 install
+          jom -j 4 PythonInstall
+
+      - name: "Build wheel"
+        shell: cmd /C call {0}
+        run: |
+          cd openmm\build
+          jom PythonBdistWheel
+          cd python\dist
+          python %GITHUB_WORKSPACE%\devtools\scripts\add_plugins_and_headers.py "%USERPROFILE%\openmm-install"
+
+      - name: "Test the wheel"
+        shell: cmd /C call {0}
+        run: |
+          python -m venv "%USERPROFILE%\test_env"
+          cd openmm\build\python\dist
+          %USERPROFILE%\test_env\Scripts\pip install "numpy<2"
+          %USERPROFILE%\test_env\Scripts\pip install --find-links . openmm
+          %USERPROFILE%\test_env\Scripts\python -m openmm.testInstallation
+          %USERPROFILE%\test_env\Scripts\python -c "import openmm as mm; print(mm.version.openmm_library_path)"
+          %USERPROFILE%\test_env\Scripts\python -c "import openmm as mm; print('---Loaded---', *mm.pluginLoadedLibNames, '---Failed---', *mm.Platform.getPluginLoadFailures(), sep='\n')"
+
+      - name: "Upload the wheel"
+        uses: actions/upload-artifact@v4
+        with:
+          name: openmm-wheel-windows-${{matrix.python-version}}
+          path: openmm\build\python\dist
           retention-days: 3

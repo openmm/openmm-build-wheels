@@ -11,10 +11,10 @@ index 5e8355cad..d2db42d6a 100644
 +configure_file(pysetup.cmake.in
 +    "${CMAKE_CURRENT_BINARY_DIR}/pysetupbdist_wheel.cmake" @ONLY)
 +add_custom_target(PythonBdistWheel
-+    COMMAND ${CMAKE_COMMAND}
++    COMMAND "${CMAKE_COMMAND}"
 +        -P "${CMAKE_CURRENT_BINARY_DIR}/pysetupbdist_wheel.cmake"
 +    DEPENDS ${STAGING_OUTPUT_FILES} "${CMAKE_CURRENT_BINARY_DIR}/pysetupbdist_wheel.cmake"
-+    WORKING_DIRECTORY ${OPENMM_PYTHON_STAGING_DIR}
++    WORKING_DIRECTORY "${OPENMM_PYTHON_STAGING_DIR}"
 +    COMMENT "Packaging wheel (bdist_wheel)..."
 +)
 +
