@@ -117,7 +117,7 @@ jobs:
           - name: Linux x86
             os: ubuntu-latest
             requirements: linux
-            cuda-version: "12-3"
+            cuda-version: "12.5.0"
             cuda-arch: "x86_64"
 
     steps:
