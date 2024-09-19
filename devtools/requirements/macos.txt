@@ -1,6 +1,6 @@
 cmake
 cython
 swig
-numpy<2.0
+numpy
 delocate
 wheel
