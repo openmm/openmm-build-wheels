@@ -206,7 +206,7 @@ jobs:
         shell: bash -l {0}
         run: |
           pushd $GITHUB_WORKSPACE/devtools/cuda
-          export OPENMM_VERSION=$($(grep "OPENMM_VERSION:" ${HOME}/openmm/build/CMakeCache.txt) | cut -d '=' -f2)
+          export OPENMM_VERSION=$(echo $(grep "OPENMM_VERSION:" ${HOME}/openmm/build/CMakeCache.txt) | cut -d '=' -f2)
           echo $OPENMM_VERSION
           export CUDA_VERSION=$(cut -d '-' -f1 <<< ${{ matrix.cuda-version }})
           echo $CUDA_VERSION
