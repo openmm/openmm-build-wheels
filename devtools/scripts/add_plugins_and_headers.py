@@ -1,5 +1,5 @@
 from delocate import wheeltools
-from os.path import join
+from os.path import join, isdir
 import os
 import shutil
 import sys
@@ -14,7 +14,7 @@ elif sys.argv[2][0] == '!':
 else:
     platform = sys.argv[2]
     def ignore(dir, files):
-        return [f for f in files if platform not in f]
+        return [f for f in files if platform not in f and not isdir(join(dir, f))]
 for filename in os.listdir('.'):
     if filename.endswith('.whl'):
         with wheeltools.InWheel(filename, filename):
