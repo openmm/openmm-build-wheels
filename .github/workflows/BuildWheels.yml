@@ -205,13 +205,15 @@ jobs:
       - name: "Build CUDA wheel"
         shell: bash -l {0}
         run: |
+          pwd
           pushd $GITHUB_WORKSPACE/devtools/cuda
+          pwd
           export OPENMM_VERSION=$(echo $(grep "OPENMM_VERSION:" $GITHUB_WORKSPACE/openmm/build/CMakeCache.txt) | cut -d '=' -f2)
           export CUDA_VERSION=$(cut -d '-' -f1 <<< ${{ matrix.cuda-version }})
           python setup.py bdist_wheel
           cd dist
           python $GITHUB_WORKSPACE/devtools/scripts/add_plugins_and_headers.py "${HOME}/openmm-install" "CUDA"
-          mv *.whl $HOME/openmm/build/python/dist/fixed
+          mv *.whl $GITHUB_WORKSPACE/openmm/build/python/dist/fixed
 #          auditwheel repair -w fixed -L ".libs/lib" --plat manylinux_2_28_x86_64 *.whl \
 #            --exclude libOpenMM.so \
 #            --exclude libOpenMMCUDA.so \
