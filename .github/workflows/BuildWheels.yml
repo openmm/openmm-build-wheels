@@ -211,19 +211,20 @@ jobs:
           python setup.py bdist_wheel
           cd dist
           python $GITHUB_WORKSPACE/devtools/scripts/add_plugins_and_headers.py "${HOME}/openmm-install" "CUDA"
-          auditwheel repair -w fixed -L ".libs/lib" --plat manylinux_2_28_x86_64 *.whl \
-            --exclude libOpenMM.so \
-            --exclude libOpenMMCUDA.so \
-            --exclude libOpenMMOpenCL.so \
-            --exclude libOpenMMDrude.so \
-            --exclude libOpenMMAmoeba.so \
-            --exclude libOpenMMRPMD.so \
-            --exclude libOpenCL.so.1 \
-            --exclude libcuda.so.1 \
-            --exclude libcufft.so.11 \
-            --exclude libcufft.so.10 \
-            --exclude libnvrtc.so.11.2 \
-            --exclude libnvrtc.so.12
+          mv *.whl $HOME/openmm/build/python/dist/fixed
+#          auditwheel repair -w fixed -L ".libs/lib" --plat manylinux_2_28_x86_64 *.whl \
+#            --exclude libOpenMM.so \
+#            --exclude libOpenMMCUDA.so \
+#            --exclude libOpenMMOpenCL.so \
+#            --exclude libOpenMMDrude.so \
+#            --exclude libOpenMMAmoeba.so \
+#            --exclude libOpenMMRPMD.so \
+#            --exclude libOpenCL.so.1 \
+#            --exclude libcuda.so.1 \
+#            --exclude libcufft.so.11 \
+#            --exclude libcufft.so.10 \
+#            --exclude libnvrtc.so.11.2 \
+#            --exclude libnvrtc.so.12
 
       - name: "Test the wheel"
         shell: bash -l {0}
