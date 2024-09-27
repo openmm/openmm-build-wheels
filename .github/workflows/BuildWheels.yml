@@ -213,7 +213,6 @@ jobs:
           python setup.py bdist_wheel
           cd dist
           python $GITHUB_WORKSPACE/devtools/scripts/add_plugins_and_headers.py "${HOME}/openmm-install" "CUDA"
-#          mv *.whl $GITHUB_WORKSPACE/openmm/build/python/dist/fixed
           auditwheel repair -w fixed -L ".libs/lib" --plat manylinux_2_28_x86_64 *.whl \
             --exclude libOpenMM.so \
             --exclude libOpenMMCUDA.so \
