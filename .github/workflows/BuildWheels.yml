@@ -186,6 +186,7 @@ jobs:
         run: |
           cd openmm/build
           export CUDA_VERSION=$(cut -d '-' -f1 <<< ${{ matrix.cuda-version }})
+          export LDFLAGS="$LDFLAGS -Wl,-rpath,$ORIGIN/../OpenMM.libs/lib"
           make PythonBdistWheel
           export LD_LIBRARY_PATH=${HOME}/openmm-install/lib
           cd python/dist
