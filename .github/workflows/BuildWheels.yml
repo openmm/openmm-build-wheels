@@ -135,6 +135,7 @@ jobs:
 
       - name: "Install dependencies with yum"
         run: |
+          yum makecache
           yum -y install doxygen zip opencl-headers ocl-icd patchelf
 
 #      - name: "Install CUDA"
