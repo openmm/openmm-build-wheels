@@ -160,6 +160,7 @@ jobs:
           git apply $GITHUB_WORKSPACE/devtools/patches/library_path.patch
           git apply $GITHUB_WORKSPACE/devtools/patches/cxx11_abi.patch
           git apply $GITHUB_WORKSPACE/devtools/patches/extras_require.patch
+          git apply $GITHUB_WORKSPACE/devtools/patches/link_args.patch
 
       - name: "Configure build with CMake"
         shell: bash -l {0}
