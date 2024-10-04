@@ -135,7 +135,7 @@ jobs:
 
       - name: "Install dependencies with yum"
         run: |
-          yum -y install doxygen zip opencl-headers ocl-icd
+          yum -y install doxygen zip opencl-headers ocl-icd patchelf
 
 #      - name: "Install CUDA"
 #        uses: Jimver/cuda-toolkit@v0.2.16
@@ -180,13 +180,14 @@ jobs:
           cd openmm/build
           make -j4 install
           make -j4 PythonInstall
+          export SITE_PACKAGES=$(python -c 'import site; print(site.getsitepackages()[0])')
+          patchelf --set-rpath '$ORIGIN/../OpenMM.libs/lib' ${SITE_PACKAGES}/openmm/_openmm.*
 
       - name: "Build wheel"
         shell: bash -l {0}
         run: |
           cd openmm/build
           export CUDA_VERSION=$(cut -d '-' -f1 <<< ${{ matrix.cuda-version }})
-          export LDFLAGS="$LDFLAGS -Wl,-rpath,$ORIGIN/../OpenMM.libs/lib"
           make PythonBdistWheel
           export LD_LIBRARY_PATH=${HOME}/openmm-install/lib
           cd python/dist
