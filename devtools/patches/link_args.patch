@@ -6,7 +6,7 @@ index d3ed414f9..257e8dd23 100644
          define_macros.append( (' _MSC_VER', None) )
          extra_compile_args.append('/EHsc')
      else:
-+        extra_link_args += ['-Wl', '-rpath', '$ORIGIN/../OpenMM.libs/lib']
++        extra_link_args += ['-Wl,-rpath,$ORIGIN/../OpenMM.libs/lib']
          if platform.system() == 'Darwin':
              extra_compile_args += ['-stdlib=libc++']
              extra_link_args += ['-stdlib=libc++', '-Wl', '-rpath', openmm_lib_path]
