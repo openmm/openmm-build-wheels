@@ -137,20 +137,20 @@ jobs:
         run: |
           yum -y install doxygen zip opencl-headers ocl-icd
 
-#      - name: "Install CUDA"
-#        uses: Jimver/cuda-toolkit@v0.2.16
-#        id: cuda-toolkit
-#        with:
-#          cuda: ${{matrix.cuda-version}}
-#          method: 'network'
-#          sub-packages: '["nvcc", "nvrtc", "nvrtc_dev", "cufft", "cufft_dev", "opencl"]'
-
       - name: "Install CUDA"
-        run: |
-          dnf config-manager --add-repo https://developer.download.nvidia.com/compute/cuda/repos/rhel8/${{ matrix.cuda-arch }}/cuda-rhel8.repo
-          dnf -y install cuda-compiler-${{ matrix.cuda-version }}.${{ matrix.cuda-arch }} \
-                         cuda-libraries-${{ matrix.cuda-version }}.${{ matrix.cuda-arch }} \
-                         cuda-libraries-devel-${{ matrix.cuda-version }}.${{ matrix.cuda-arch }}
+        uses: Jimver/cuda-toolkit@v0.2.16
+        id: cuda-toolkit
+        with:
+          cuda: ${{matrix.cuda-version}}
+          method: 'network'
+          sub-packages: '["nvcc", "nvrtc", "nvrtc_dev", "cufft", "cufft_dev", "opencl"]'
+
+#      - name: "Install CUDA"
+#        run: |
+#          dnf config-manager --add-repo https://developer.download.nvidia.com/compute/cuda/repos/rhel8/${{ matrix.cuda-arch }}/cuda-rhel8.repo
+#          dnf -y install cuda-compiler-${{ matrix.cuda-version }}.${{ matrix.cuda-arch }} \
+#                         cuda-libraries-${{ matrix.cuda-version }}.${{ matrix.cuda-arch }} \
+#                         cuda-libraries-devel-${{ matrix.cuda-version }}.${{ matrix.cuda-arch }}
 
       - name: "Check out OpenMM source code"
         run: |
@@ -187,7 +187,6 @@ jobs:
         run: |
           cd openmm/build
           export CUDA_VERSION=$(cut -d '-' -f1 <<< ${{ matrix.cuda-version }})
-          export LDFLAGS="$LDFLAGS -Wl,-rpath,$ORIGIN/../OpenMM.libs/lib"
           make PythonBdistWheel
           export LD_LIBRARY_PATH=${HOME}/openmm-install/lib
           cd python/dist
@@ -242,7 +241,7 @@ jobs:
           python -c "import openmm as mm; print(mm.version.openmm_library_path)"
           python -c "import openmm as mm; print('---Loaded---', *mm.pluginLoadedLibNames, '---Failed---', *mm.Platform.getPluginLoadFailures(), sep='\n')"
           export SITE_PACKAGES=$(python -c 'import site; print(site.getsitepackages()[0])')
-          readelf -d ${SITE_PACKAGES}/openmm/_openmm.*
+          ldd ${SITE_PACKAGES}/OpenMM.lib/lib/plugins/*.so
 
       - name: "Upload the wheel"
         uses: actions/upload-artifact@v4
