@@ -135,8 +135,7 @@ jobs:
 
       - name: "Install dependencies with yum"
         run: |
-          yum makecache
-          yum -y install doxygen zip opencl-headers ocl-icd patchelf
+          yum -y install doxygen zip opencl-headers ocl-icd
 
 #      - name: "Install CUDA"
 #        uses: Jimver/cuda-toolkit@v0.2.16
