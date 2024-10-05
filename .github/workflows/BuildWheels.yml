@@ -242,8 +242,8 @@ jobs:
           python -c "import openmm as mm; print('---Loaded---', *mm.pluginLoadedLibNames, '---Failed---', *mm.Platform.getPluginLoadFailures(), sep='\n')"
           export SITE_PACKAGES=$(python -c 'import site; print(site.getsitepackages()[0])')
           export LIBRARY_DIR=$(python -c "from openmm import *; print(version.openmm_library_path)")
-          ls -R ${LIBRARY_DIR)
-          ldd ${SITE_PACKAGES}/OpenMM.lib/lib/plugins/*.so
+          ls -R ${LIBRARY_DIR}
+          ldd ${SITE_PACKAGES}/OpenMM.libs/lib/plugins/*.so
 
       - name: "Upload the wheel"
         uses: actions/upload-artifact@v4
