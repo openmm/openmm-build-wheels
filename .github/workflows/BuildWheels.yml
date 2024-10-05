@@ -116,7 +116,7 @@ jobs:
           - name: Linux x86
             os: ubuntu-latest
             requirements: linux
-            cuda-version: "12.5.0"
+            cuda-version: "12-3"
             cuda-arch: "x86_64"
 
     steps:
@@ -137,20 +137,20 @@ jobs:
         run: |
           yum -y install doxygen zip opencl-headers ocl-icd
 
-      - name: "Install CUDA"
-        uses: Jimver/cuda-toolkit@v0.2.16
-        id: cuda-toolkit
-        with:
-          cuda: ${{matrix.cuda-version}}
-          #method: 'network'
-          #sub-packages: '["nvcc", "nvrtc", "nvrtc_dev", "cufft", "cufft_dev", "opencl"]'
-
 #      - name: "Install CUDA"
-#        run: |
-#          dnf config-manager --add-repo https://developer.download.nvidia.com/compute/cuda/repos/rhel8/${{ matrix.cuda-arch }}/cuda-rhel8.repo
-#          dnf -y install cuda-compiler-${{ matrix.cuda-version }}.${{ matrix.cuda-arch }} \
-#                         cuda-libraries-${{ matrix.cuda-version }}.${{ matrix.cuda-arch }} \
-#                         cuda-libraries-devel-${{ matrix.cuda-version }}.${{ matrix.cuda-arch }}
+#        uses: Jimver/cuda-toolkit@v0.2.16
+#        id: cuda-toolkit
+#        with:
+#          cuda: ${{matrix.cuda-version}}
+#          method: 'network'
+#          sub-packages: '["nvcc", "nvrtc", "nvrtc_dev", "cufft", "cufft_dev", "opencl"]'
+
+      - name: "Install CUDA"
+        run: |
+          dnf config-manager --add-repo https://developer.download.nvidia.com/compute/cuda/repos/rhel8/${{ matrix.cuda-arch }}/cuda-rhel8.repo
+          dnf -y install cuda-compiler-${{ matrix.cuda-version }}.${{ matrix.cuda-arch }} \
+                         cuda-libraries-${{ matrix.cuda-version }}.${{ matrix.cuda-arch }} \
+                         cuda-libraries-devel-${{ matrix.cuda-version }}.${{ matrix.cuda-arch }}
 
       - name: "Check out OpenMM source code"
         run: |
