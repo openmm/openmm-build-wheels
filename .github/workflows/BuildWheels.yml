@@ -1,7 +1,7 @@
 name: OpenMM-Build-Wheels
 
 env:
-  GIT_REVISION: 'master'
+  GIT_REVISION: 'nvrtc'
 
 on:
   push:
@@ -154,7 +154,7 @@ jobs:
 
       - name: "Check out OpenMM source code"
         run: |
-          git clone https://github.com/openmm/openmm.git
+          git clone https://github.com/peastman/openmm.git
           cd openmm
           git checkout $GIT_REVISION
           git apply $GITHUB_WORKSPACE/devtools/patches/library_path.patch
