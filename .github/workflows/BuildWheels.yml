@@ -266,7 +266,7 @@ jobs:
         with:
           cuda: ${{matrix.cuda-version}}
           method: 'network'
-          sub-packages: '["nvcc", "nvrtc", "nvrtc_dev", "cufft", "cufft_dev", "opencl"]'
+          sub-packages: '["nvcc", "nvrtc", "nvrtc_dev", "cufft", "cufft_dev", "opencl", "cudart"]'
 
       - name: "Check out OpenMM source code"
         shell: cmd /C call {0}
