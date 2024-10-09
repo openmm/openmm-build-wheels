@@ -1,0 +1,12 @@
+diff --git a/wrappers/python/setup.py b/wrappers/python/setup.py
+index d3ed414f9..257e8dd23 100644
+--- a/wrappers/python/setup.py
++++ b/wrappers/python/setup.py
+@@ -198,6 +198,7 @@ def buildKeywordDictionary(major_version_num=MAJOR_VERSION_NUM,
+         define_macros.append( (' _MSC_VER', None) )
+         extra_compile_args.append('/EHsc')
+     else:
++        extra_link_args += ['-Wl,-rpath,$ORIGIN/../OpenMM.libs/lib']
+         if platform.system() == 'Darwin':
+             extra_compile_args += ['-stdlib=libc++']
+             extra_link_args += ['-stdlib=libc++', '-Wl', '-rpath', openmm_lib_path]

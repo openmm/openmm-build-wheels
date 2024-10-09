@@ -52,7 +52,6 @@ jobs:
           cd openmm
           git checkout $GIT_REVISION
           git apply ${{ github.workspace }}/devtools/patches/library_path.patch
-          git apply ${{ github.workspace }}/devtools/patches/bdist_wheel.patch
 
       - name: "Configure build with CMake"
         shell: bash -l {0}
@@ -96,6 +95,7 @@ jobs:
           cd openmm/build/python/dist
           pip install fixed/*
           python -m openmm.testInstallation
+          python -c "import openmm as mm; print(mm.version.openmm_library_path)"
           python -c "import openmm as mm; print('---Loaded---', *mm.pluginLoadedLibNames, '---Failed---', *mm.Platform.getPluginLoadFailures(), sep='\n')"
 
       - name: "Upload the wheel"
@@ -151,8 +151,9 @@ jobs:
           cd openmm
           git checkout $GIT_REVISION
           git apply $GITHUB_WORKSPACE/devtools/patches/library_path.patch
-          git apply $GITHUB_WORKSPACE/devtools/patches/bdist_wheel.patch
           git apply $GITHUB_WORKSPACE/devtools/patches/cxx11_abi.patch
+          git apply $GITHUB_WORKSPACE/devtools/patches/extras_require.patch
+          git apply $GITHUB_WORKSPACE/devtools/patches/link_args.patch
 
       - name: "Configure build with CMake"
         shell: bash -l {0}
@@ -178,10 +179,11 @@ jobs:
         shell: bash -l {0}
         run: |
           cd openmm/build
+          export CUDA_VERSION=$(cut -d '-' -f1 <<< ${{ matrix.cuda-version }})
           make PythonBdistWheel
           export LD_LIBRARY_PATH=${HOME}/openmm-install/lib
           cd python/dist
-          python $GITHUB_WORKSPACE/devtools/scripts/add_plugins_and_headers.py "${HOME}/openmm-install"
+          python $GITHUB_WORKSPACE/devtools/scripts/add_plugins_and_headers.py "${HOME}/openmm-install" "!CUDA"
           auditwheel repair -w fixed -L ".libs/lib" --plat manylinux_2_28_x86_64 *.whl \
             --exclude libOpenMM.so \
             --exclude libOpenMMCUDA.so \
@@ -195,6 +197,17 @@ jobs:
             --exclude libcufft.so.10 \
             --exclude libnvrtc.so.11.2 \
             --exclude libnvrtc.so.12
+
+      - name: "Build CUDA wheel"
+        shell: bash -l {0}
+        run: |
+          cd $GITHUB_WORKSPACE/devtools/cuda
+          export OPENMM_VERSION=$(echo $(grep "OPENMM_VERSION:" $GITHUB_WORKSPACE/openmm/build/CMakeCache.txt) | cut -d '=' -f2)
+          export CUDA_VERSION=$(cut -d '-' -f1 <<< ${{ matrix.cuda-version }})
+          python setup.py bdist_wheel
+          cd dist
+          python $GITHUB_WORKSPACE/devtools/scripts/add_plugins_and_headers.py "${HOME}/openmm-install" "CUDA"
+          mv *.whl $GITHUB_WORKSPACE/openmm/build/python/dist/fixed
 
       - name: "Test the wheel"
         shell: bash -l {0}
@@ -262,7 +275,6 @@ jobs:
           cd openmm
           git checkout %GIT_REVISION%
           git apply %GITHUB_WORKSPACE%\devtools\patches\library_path.patch
-          git apply %GITHUB_WORKSPACE%\devtools\patches\bdist_wheel.patch
           git apply %GITHUB_WORKSPACE%\devtools\patches\cxx11_abi.patch
 
       - name: "Configure build with CMake"
