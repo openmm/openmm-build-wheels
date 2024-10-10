@@ -148,7 +148,7 @@ jobs:
       - name: "Install HIP"
         run: |
           yum install -y https://repo.radeon.com/amdgpu-install/6.2.2/el/8.10/amdgpu-install-6.2.60202-1.el8.noarch.rpm
-          amdgpu-install --no-dkms --usecase=hiplibsdk
+          amdgpu-install -y --no-dkms --usecase=hiplibsdk
 
       - name: "Check out OpenMM source code"
         run: |
@@ -305,6 +305,7 @@ jobs:
                 -DOPENCL_INCLUDE_DIR="${{steps.cuda-toolkit.outputs.CUDA_PATH}}/include" ^
                 -DOPENCL_LIBRARY="${{steps.cuda-toolkit.outputs.CUDA_PATH}}/lib/x64/OpenCL.lib" ^
                 ..
+          type CMakeCache.txt
 
       - name: "Build OpenMM"
         shell: cmd /C call {0}
