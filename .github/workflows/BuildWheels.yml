@@ -314,7 +314,7 @@ jobs:
         shell: cmd /C call {0}
         run: |
           cd %GITHUB_WORKSPACE%\devtools\cuda
-          findstr "OPENMM_VERSION:STRING=" CMakeCache.txt > version.txt
+          findstr "OPENMM_VERSION:STRING=" %GITHUB_WORKSPACE%\openmm\build\CMakeCache.txt > version.txt
           set /P OPENMM_VERSION_LINE= < version.txt
           set OPENMM_VERSION=%OPENMM_VERSION_LINE:~22%
           set FULL_CUDA_VERSION=${{ matrix.cuda-version }}
