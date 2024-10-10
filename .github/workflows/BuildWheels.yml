@@ -323,7 +323,7 @@ jobs:
           python setup.py bdist_wheel
           cd dist
           python %GITHUB_WORKSPACE%\devtools\scripts\add_plugins_and_headers.py "%USERPROFILE%\openmm-install" "CUDA"
-          move *.whl %GITHUB_WORKSPACE%\openmm\build\python\dist\fixed
+          move *.whl %GITHUB_WORKSPACE%\openmm\build\python\dist
 
       - name: "Test the wheel"
         shell: cmd /C call {0}
