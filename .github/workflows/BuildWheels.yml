@@ -278,10 +278,11 @@ jobs:
         run: |
           curl.exe --output HIP.exe --url https://download.amd.com/developer/eula/rocm-hub/AMD-Software-PRO-Edition-24.Q3-Win10-Win11-For-HIP.exe
           HIP.exe -install
-          dir C:\Program Files
-          dir C:\Program Files\AMD
-          dir C:\Program Files\AMD\ROCm
-          dir C:\Program Files\AMD\ROCm\6.1
+          set ProgramFiles
+          dir "%ProgramFiles%"
+          dir "%ProgramFiles%\AMD"
+          dir "%ProgramFiles%\AMD\ROCm"
+          dir "%ProgramFiles%\AMD\ROCm\6.1"
 
       - name: "Check out OpenMM source code"
         shell: cmd /C call {0}
@@ -300,7 +301,7 @@ jobs:
           cd openmm
           mkdir build
           cd build
-          set ROCM_PATH=C:\Program Files\AMD\ROCm\6.1
+          set ROCM_PATH="%ProgramFiles%\AMD\ROCm\6.1"
           cmake -G "NMake Makefiles JOM" ^
                 -DCMAKE_BUILD_TYPE=Release ^
                 -DCMAKE_INSTALL_PREFIX=%USERPROFILE%/openmm-install ^
