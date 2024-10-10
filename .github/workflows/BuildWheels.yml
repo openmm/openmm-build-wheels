@@ -146,9 +146,9 @@ jobs:
                          cuda-libraries-devel-${{ matrix.cuda-version }}.${{ matrix.cuda-arch }}
 
       - name: "Install HIP"
-        run: |
-          yum install https://repo.radeon.com/amdgpu-install/6.2.2/el/8.10/amdgpu-install-6.2.60202-1.el8.noarch.rpm
-          amdgpu-install --usecase=hip
+        uses: neoblizz/rocm-setup@v0.1.0-beta
+        with:
+          rocm: '6.2.2'
 
       - name: "Check out OpenMM source code"
         run: |
