@@ -147,8 +147,9 @@ jobs:
 
       - name: "Install HIP"
         run: |
+          yum install -y epel-release
           yum install -y https://repo.radeon.com/amdgpu-install/6.2.2/el/8.10/amdgpu-install-6.2.60202-1.el8.noarch.rpm
-          amdgpu-install -y --no-dkms --usecase=hiplibsdk
+          yum install -y rocm-device-libs hip-devel hip-runtime-amd
 
       - name: "Check out OpenMM source code"
         run: |
