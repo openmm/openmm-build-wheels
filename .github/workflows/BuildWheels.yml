@@ -149,7 +149,7 @@ jobs:
         run: |
           yum install -y epel-release
           yum install -y https://repo.radeon.com/amdgpu-install/6.2.2/el/8.10/amdgpu-install-6.2.60202-1.el8.noarch.rpm
-          yum install -y rocm-device-libs hip-devel hip-runtime-amd
+          yum install -y rocm-device-libs hip-devel hip-runtime-amd hipcc
 
       - name: "Check out OpenMM source code"
         run: |
@@ -297,11 +297,10 @@ jobs:
           cd openmm
           mkdir build
           cd build
-          set CMAKE_PREFIX_PATH="C:\Program Files\AMD\ROCm\6.1"
           cmake -G "NMake Makefiles JOM" ^
                 -DCMAKE_BUILD_TYPE=Release ^
                 -DCMAKE_INSTALL_PREFIX=%USERPROFILE%/openmm-install ^
-                -DCMAKE_PREFIX_PATH=%USERPROFILE%/openmm-install ^
+                -DCMAKE_PREFIX_PATH="%USERPROFILE%/openmm-install;C:\Program Files\AMD\ROCm\6.1" ^
                 -DCMAKE_CXX_COMPILER=cl.exe ^
                 -DCMAKE_C_COMPILER=cl.exe ^
                 -DOPENCL_INCLUDE_DIR="${{steps.cuda-toolkit.outputs.CUDA_PATH}}/include" ^
