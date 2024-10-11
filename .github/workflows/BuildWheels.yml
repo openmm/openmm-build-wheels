@@ -202,7 +202,9 @@ jobs:
             --exclude libcufft.so.11 \
             --exclude libcufft.so.10 \
             --exclude libnvrtc.so.11.2 \
-            --exclude libnvrtc.so.12
+            --exclude libnvrtc.so.12 \
+            --exclude libhiprtc.so.6 \
+            --exclude libamdhip64.so.6
 
       - name: "Build CUDA wheel"
         shell: bash -l {0}
@@ -305,6 +307,7 @@ jobs:
                 -DCMAKE_C_COMPILER=cl.exe ^
                 -DOPENCL_INCLUDE_DIR="${{steps.cuda-toolkit.outputs.CUDA_PATH}}/include" ^
                 -DOPENCL_LIBRARY="${{steps.cuda-toolkit.outputs.CUDA_PATH}}/lib/x64/OpenCL.lib" ^
+                -DHIP_PLATFORM=amd ^
                 ..
           type CMakeCache.txt
 
