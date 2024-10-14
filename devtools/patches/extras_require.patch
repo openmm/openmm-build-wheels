@@ -7,7 +7,7 @@ index d3ed414f9..f3c650173 100644
                                            "openmm.app.internal" : []}
      setupKeywords["install_requires"]  = ["numpy"]
 +    CUDA_VERSION=os.getenv('CUDA_VERSION')
-+    setupKeywords["extras_require"]    = {f"cuda{CUDA_VERSION}": [f"OpenMM-CUDA-{CUDA_VERSION}"]}
++    setupKeywords["extras_require"]    = {f"cuda{CUDA_VERSION}": [f"OpenMM-CUDA-{CUDA_VERSION}"], f"hip{HIP_VERSION}": [f"OpenMM-HIP-{HIP_VERSION}"]}
      setupKeywords["platforms"]         = ["Linux", "Mac OS X", "Windows"]
      setupKeywords["description"]       = \
      "Python wrapper for OpenMM (a C++ MD package)"
