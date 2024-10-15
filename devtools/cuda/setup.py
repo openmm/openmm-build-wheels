@@ -11,9 +11,10 @@ setup(
     author='Peter Eastman',
     url='https://openmm.org',
     packages=[],
-    install_requires=[f'nvidia-cuda-runtime-cu{CUDA_VERSION} @ https://pypi.ngc.nvidia.com',
-                      f'nvidia-cuda-nvcc-cu{CUDA_VERSION} @ https://pypi.ngc.nvidia.com',
-                      f'nvidia-cuda-nvrtc-cu{CUDA_VERSION} @ https://pypi.ngc.nvidia.com',
-                      f'nvidia-cuda-cupti-cu{CUDA_VERSION} @ https://pypi.ngc.nvidia.com',
-                      f'nvidia-cufft-cu{CUDA_VERSION} @ https://pypi.ngc.nvidia.com']
+    install_requires=[f'nvidia-cuda-runtime-cu{CUDA_VERSION}',
+                      f'nvidia-cuda-nvcc-cu{CUDA_VERSION}',
+                      f'nvidia-cuda-nvrtc-cu{CUDA_VERSION}',
+                      f'nvidia-cuda-cupti-cu{CUDA_VERSION}',
+                      f'nvidia-cufft-cu{CUDA_VERSION}'],
+    dependency_links=['https://pypi.ngc.nvidia.com']
 )
