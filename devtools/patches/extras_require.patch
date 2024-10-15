@@ -1,13 +1,14 @@
 diff --git a/wrappers/python/setup.py b/wrappers/python/setup.py
-index d3ed414f9..f3c650173 100644
+index d3ed414f9..07d1dd70f 100644
 --- a/wrappers/python/setup.py
 +++ b/wrappers/python/setup.py
-@@ -155,6 +155,8 @@ def buildKeywordDictionary(major_version_num=MAJOR_VERSION_NUM,
+@@ -155,6 +155,9 @@ def buildKeywordDictionary(major_version_num=MAJOR_VERSION_NUM,
                                            "openmm.app" : ['data/*.xml', 'data/*.pdb', 'data/amber14/*.xml', 'data/charmm36/*.xml', 'data/implicit/*.xml'],
                                            "openmm.app.internal" : []}
      setupKeywords["install_requires"]  = ["numpy"]
 +    CUDA_VERSION=os.getenv('CUDA_VERSION')
-+    setupKeywords["extras_require"]    = {f"cuda{CUDA_VERSION}": [f"OpenMM-CUDA-{CUDA_VERSION}"]}
++    HIP_VERSION=os.getenv('HIP_VERSION')
++    setupKeywords["extras_require"]    = {f"cuda{CUDA_VERSION}": [f"OpenMM-CUDA-{CUDA_VERSION}"], f"hip{HIP_VERSION}": [f"OpenMM-HIP-{HIP_VERSION}"]}
      setupKeywords["platforms"]         = ["Linux", "Mac OS X", "Windows"]
      setupKeywords["description"]       = \
      "Python wrapper for OpenMM (a C++ MD package)"

@@ -119,6 +119,7 @@ jobs:
             requirements: linux
             cuda-version: "12-3"
             cuda-arch: "x86_64"
+            hip-version: "6"
 
     steps:
       - uses: actions/checkout@v3
@@ -189,7 +190,7 @@ jobs:
           make PythonBdistWheel
           export LD_LIBRARY_PATH=${HOME}/openmm-install/lib
           cd python/dist
-          python $GITHUB_WORKSPACE/devtools/scripts/add_plugins_and_headers.py "${HOME}/openmm-install" "!CUDA"
+          python $GITHUB_WORKSPACE/devtools/scripts/add_plugins_and_headers.py "${HOME}/openmm-install" "!CUDA" "!HIP"
           auditwheel repair -w fixed -L ".libs/lib" --plat manylinux_2_28_x86_64 *.whl \
             --exclude libOpenMM.so \
             --exclude libOpenMMCUDA.so \
@@ -218,6 +219,17 @@ jobs:
           python $GITHUB_WORKSPACE/devtools/scripts/add_plugins_and_headers.py "${HOME}/openmm-install" "CUDA"
           mv *.whl $GITHUB_WORKSPACE/openmm/build/python/dist/fixed
 
+      - name: "Build HIP wheel"
+        shell: bash -l {0}
+        run: |
+          cd $GITHUB_WORKSPACE/devtools/hip
+          export OPENMM_VERSION=$(echo $(grep "OPENMM_VERSION:" $GITHUB_WORKSPACE/openmm/build/CMakeCache.txt) | cut -d '=' -f2)
+          export HIP_VERSION=${{ matrix.hip-version }}
+          python setup.py bdist_wheel
+          cd dist
+          python $GITHUB_WORKSPACE/devtools/scripts/add_plugins_and_headers.py "${HOME}/openmm-install" "HIP"
+          mv *.whl $GITHUB_WORKSPACE/openmm/build/python/dist/fixed
+
       - name: "Test the wheel"
         shell: bash -l {0}
         run: |
@@ -225,7 +237,8 @@ jobs:
           python -m venv "${HOME}/test_env"
           source "${HOME}/test_env/bin/activate"
           cd openmm/build/python/dist
-          pip install fixed/*
+          export CUDA_VERSION=$(cut -d '-' -f1 <<< ${{ matrix.cuda-version }})
+          pip install -f fixed openmm[cuda${CUDA_VERSION},hip${{ matrix.hip-version }}]
           python -m openmm.testInstallation
           python -c "import openmm as mm; print(mm.version.openmm_library_path)"
           python -c "import openmm as mm; print('---Loaded---', *mm.pluginLoadedLibNames, '---Failed---', *mm.Platform.getPluginLoadFailures(), sep='\n')"
@@ -248,6 +261,7 @@ jobs:
             os: windows-latest
             requirements: windows
             cuda-version: "12.5.0"
+            hip-version: "6"
 
     steps:
       - uses: actions/checkout@v3
@@ -327,7 +341,7 @@ jobs:
           set CUDA_VERSION=%FULL_CUDA_VERSION:~0,2%
           jom PythonBdistWheel
           cd python\dist
-          python %GITHUB_WORKSPACE%\devtools\scripts\add_plugins_and_headers.py "%USERPROFILE%\openmm-install" "!CUDA"
+          python %GITHUB_WORKSPACE%\devtools\scripts\add_plugins_and_headers.py "%USERPROFILE%\openmm-install" "!CUDA" "!HIP"
 
       - name: "Build CUDA wheel"
         shell: cmd /C call {0}
@@ -343,6 +357,19 @@ jobs:
           python %GITHUB_WORKSPACE%\devtools\scripts\add_plugins_and_headers.py "%USERPROFILE%\openmm-install" "CUDA"
           move *.whl %GITHUB_WORKSPACE%\openmm\build\python\dist
 
+      - name: "Build HIP wheel"
+        shell: cmd /C call {0}
+        run: |
+          cd %GITHUB_WORKSPACE%\devtools\hip
+          findstr "OPENMM_VERSION:STRING=" %GITHUB_WORKSPACE%\openmm\build\CMakeCache.txt > version.txt
+          set /P OPENMM_VERSION_LINE= < version.txt
+          set OPENMM_VERSION=%OPENMM_VERSION_LINE:~22%
+          set HIP_VERSION=${{ matrix.hip-version }}
+          python setup.py bdist_wheel
+          cd dist
+          python %GITHUB_WORKSPACE%\devtools\scripts\add_plugins_and_headers.py "%USERPROFILE%\openmm-install" "HIP"
+          move *.whl %GITHUB_WORKSPACE%\openmm\build\python\dist
+
       - name: "Test the wheel"
         shell: cmd /C call {0}
         run: |
@@ -351,7 +378,7 @@ jobs:
           set FULL_CUDA_VERSION=${{ matrix.cuda-version }}
           set CUDA_VERSION=%FULL_CUDA_VERSION:~0,2%
           %USERPROFILE%\test_env\Scripts\pip install "numpy"
-          %USERPROFILE%\test_env\Scripts\pip install --find-links . openmm[cuda%CUDA_VERSION%]
+          %USERPROFILE%\test_env\Scripts\pip install --find-links . openmm[cuda%CUDA_VERSION%,hip${{ matrix.hip-version }}]
           %USERPROFILE%\test_env\Scripts\python -m openmm.testInstallation
           %USERPROFILE%\test_env\Scripts\python -c "import openmm as mm; print(mm.version.openmm_library_path)"
           %USERPROFILE%\test_env\Scripts\python -c "import openmm as mm; print('---Loaded---', *mm.pluginLoadedLibNames, '---Failed---', *mm.Platform.getPluginLoadFailures(), sep='\n')"
