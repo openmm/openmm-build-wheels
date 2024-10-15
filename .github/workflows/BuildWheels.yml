@@ -239,7 +239,7 @@ jobs:
           source "${HOME}/test_env/bin/activate"
           cd openmm/build/python/dist
           export CUDA_VERSION=$(cut -d '-' -f1 <<< ${{ matrix.cuda-version }})
-          pip install -f fixed openmm[cuda%CUDA_VERSION%,hip${{ matrix.hip-version }}]
+          pip install -f fixed openmm[cuda${CUDA_VERSION},hip${{ matrix.hip-version }}]
           python -m openmm.testInstallation
           python -c "import openmm as mm; print(mm.version.openmm_library_path)"
           python -c "import openmm as mm; print('---Loaded---', *mm.pluginLoadedLibNames, '---Failed---', *mm.Platform.getPluginLoadFailures(), sep='\n')"
