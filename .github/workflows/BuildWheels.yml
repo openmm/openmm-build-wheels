@@ -225,7 +225,6 @@ jobs:
           cd $GITHUB_WORKSPACE/devtools/hip
           export OPENMM_VERSION=$(echo $(grep "OPENMM_VERSION:" $GITHUB_WORKSPACE/openmm/build/CMakeCache.txt) | cut -d '=' -f2)
           export HIP_VERSION=${{ matrix.hip-version }}
-          echo $HIP_VERSION
           python setup.py bdist_wheel
           cd dist
           python $GITHUB_WORKSPACE/devtools/scripts/add_plugins_and_headers.py "${HOME}/openmm-install" "HIP"
