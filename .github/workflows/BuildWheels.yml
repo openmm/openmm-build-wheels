@@ -230,6 +230,11 @@ jobs:
           python $GITHUB_WORKSPACE/devtools/scripts/add_plugins_and_headers.py "${HOME}/openmm-install" "HIP"
           mv *.whl $GITHUB_WORKSPACE/openmm/build/python/dist/fixed
 
+      - name: "Rename wheels"
+        shell: bash -l {0}
+        run: |
+          python $GITHUB_WORKSPACE/devtools/scripts/rename_wheels.py $GITHUB_WORKSPACE/openmm/build/python/dist/fixed
+
       - name: "Test the wheel"
         shell: bash -l {0}
         run: |
@@ -369,6 +374,11 @@ jobs:
           cd dist
           python %GITHUB_WORKSPACE%\devtools\scripts\add_plugins_and_headers.py "%USERPROFILE%\openmm-install" "HIP"
           move *.whl %GITHUB_WORKSPACE%\openmm\build\python\dist
+
+      - name: "Rename wheels"
+        shell: cmd /C call {0}
+        run: |
+          python %GITHUB_WORKSPACE%\devtools\scripts\rename_wheels.py %GITHUB_WORKSPACE%\openmm\build\python\dist
 
       - name: "Test the wheel"
         shell: cmd /C call {0}
