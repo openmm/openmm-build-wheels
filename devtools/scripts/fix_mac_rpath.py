@@ -11,5 +11,7 @@ for wheelname in os.listdir(install_dir):
             for libname in os.listdir('openmm'):
                 if libname.endswith('.so'):
                     print('lib name', libname)
+                    print('current rpaths:', tools.get_rpaths(join('openmm', libname)))
                     tools._delete_rpaths(join('openmm', libname), ['/Users/runner/openmm-install/lib'])
                     tools.add_rpath(join('openmm', libname), '../OpenMM.libs/lib')
+                    print('new rpaths:', tools.get_rpaths(join('openmm', libname)))
