@@ -85,6 +85,7 @@ jobs:
             --exclude libOpenMMAmoebaOpenCL.dylib \
             --exclude libOpenMMRPMD.dylib \
             --exclude libOpenMMRPMDOpenCL.dylib
+          python ${{ github.workspace }}/devtools/scripts/fix_mac_rpath.py fixed
 
       - name: "Test the wheel"
         shell: bash -l {0}
