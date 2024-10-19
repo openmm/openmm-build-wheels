@@ -183,6 +183,7 @@ jobs:
           cd openmm/build
           make -j4 install
           make -j4 PythonInstall
+          readelf -d ${HOME}/openmm-install/lib/plugins/libOpenMMCUDA.so
 
       - name: "Build wheel"
         shell: bash -l {0}
