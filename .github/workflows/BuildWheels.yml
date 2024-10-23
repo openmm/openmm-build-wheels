@@ -1,7 +1,8 @@
 name: OpenMM-Build-Wheels
 
 env:
-  GIT_REVISION: 'master'
+  GIT_REVISION: 'ba9113f'
+  VERSION_SUFFIX: 'rc1'
 
 on:
   push:
@@ -17,7 +18,7 @@ jobs:
     name: ${{ matrix.name }}
     strategy:
       matrix:
-        python-version: ["3.10"]
+        python-version: ["3.10", "3.11", "3.12", "3.13"]
         include:
           - name: MacOS ARM
             os: macos-latest
@@ -113,7 +114,7 @@ jobs:
     name: ${{ matrix.name }}
     strategy:
       matrix:
-        python-version: ["3.10"]
+        python-version: ["3.10", "3.11", "3.12", "3.13"]
         include:
           - name: Linux x86
             os: ubuntu-latest
@@ -262,7 +263,7 @@ jobs:
     name: ${{ matrix.name }}
     strategy:
       matrix:
-        python-version: ["3.10"]
+        python-version: ["3.10", "3.11", "3.12", "3.13"]
         include:
           - name: Windows x86
             os: windows-latest
