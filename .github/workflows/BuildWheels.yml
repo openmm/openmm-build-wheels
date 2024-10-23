@@ -13,99 +13,99 @@ on:
       - "main"
 
 jobs:
-#  mac:
-#    runs-on: ${{ matrix.os }}
-#    name: "${{ matrix.name }} ${{ matrix.python-version}}"
-#    strategy:
-#      matrix:
-#        python-version: ["3.10", "3.11", "3.12", "3.13"]
-#        include:
-#          - name: MacOS ARM
-#            os: macos-latest
-#            requirements: macos
-#
-#    steps:
-#      - uses: actions/checkout@v4
-#
-#      - uses: mamba-org/setup-micromamba@v1
-#        with:
-#          environment-name: build-env
-#          create-args: >-
-#            python=${{ matrix.python-version }}
-#          init-shell: bash
-#
-#      - name: "Install dependencies"
-#        shell: bash -l {0}
-#        run: pip install -v -r devtools/requirements/${{ matrix.requirements }}.txt
-#
-#      - name: "Install Homebrew"
-#        uses: Homebrew/actions/setup-homebrew@master
-#
-#      - name: "Install Doxygen with brew"
-#        run: brew install doxygen
-#
-#      - name: "Set SDK on MacOS (if needed)"
-#        run: source devtools/scripts/install_macos_sdk.sh
-#
-#      - name: "Check out OpenMM source code"
-#        run: |
-#          git clone https://github.com/openmm/openmm.git
-#          cd openmm
-#          git checkout $GIT_REVISION
-#          git apply ${{ github.workspace }}/devtools/patches/library_path.patch
-#
-#      - name: "Configure build with CMake"
-#        shell: bash -l {0}
-#        run: |
-#          cd openmm
-#          mkdir build
-#          cd build
-#          cmake .. -DCMAKE_INSTALL_PREFIX=${HOME}/openmm-install
-#
-#      - name: "Build OpenMM"
-#        shell: bash -l {0}
-#        run: |
-#          cd openmm/build
-#          make -j4 install
-#          make -j4 PythonInstall
-#
-#      - name: "Build wheel"
-#        shell: bash -l {0}
-#        run: |
-#          cd openmm/build
-#          make PythonBdistWheel
-#          export DYLD_LIBRARY_PATH=${HOME}/openmm-install/lib
-#          cd python/dist
-#          python ${{ github.workspace }}/devtools/scripts/add_plugins_and_headers.py "${HOME}/openmm-install"
-#          python ${{ github.workspace }}/devtools/scripts/fix_mac_rpath.py .
-#          python -m delocate.cmd.delocate_wheel -w fixed -v *.whl -L "../OpenMM.libs/lib" --sanitize-rpaths \
-#            --exclude libOpenMM.dylib \
-#            --exclude libOpenMMOpenCL.dylib \
-#            --exclude libOpenMMDrude.dylib \
-#            --exclude libOpenMMDrudeOpenCL.dylib \
-#            --exclude libOpenMMAmoeba.dylib \
-#            --exclude libOpenMMAmoebaOpenCL.dylib \
-#            --exclude libOpenMMRPMD.dylib \
-#            --exclude libOpenMMRPMDOpenCL.dylib
-#
-#      - name: "Test the wheel"
-#        shell: bash -l {0}
-#        run: |
-#          set -x
-#          python -m venv "${HOME}/test_env"
-#          source "${HOME}/test_env/bin/activate"
-#          cd openmm/build/python/dist
-#          pip install --pre fixed/*
-#          python -m openmm.testInstallation
-#          python -c "import openmm as mm; print(mm.version.openmm_library_path)"
-#          python -c "import openmm as mm; print('---Loaded---', *mm.pluginLoadedLibNames, '---Failed---', *mm.Platform.getPluginLoadFailures(), sep='\n')"
-#
-#      - name: "Upload the wheel"
-#        uses: actions/upload-artifact@v4
-#        with:
-#          name: openmm-wheel-mac-${{matrix.python-version}}
-#          path: openmm/build/python/dist/fixed
-#          retention-days: 3
+  mac:
+    runs-on: ${{ matrix.os }}
+    name: "${{ matrix.name }} ${{ matrix.python-version}}"
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.11", "3.12", "3.13"]
+        include:
+          - name: MacOS ARM
+            os: macos-latest
+            requirements: macos
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: mamba-org/setup-micromamba@v1
+        with:
+          environment-name: build-env
+          create-args: >-
+            python=${{ matrix.python-version }}
+          init-shell: bash
+
+      - name: "Install dependencies"
+        shell: bash -l {0}
+        run: pip install -v -r devtools/requirements/${{ matrix.requirements }}.txt
+
+      - name: "Install Homebrew"
+        uses: Homebrew/actions/setup-homebrew@master
+
+      - name: "Install Doxygen with brew"
+        run: brew install doxygen
+
+      - name: "Set SDK on MacOS (if needed)"
+        run: source devtools/scripts/install_macos_sdk.sh
+
+      - name: "Check out OpenMM source code"
+        run: |
+          git clone https://github.com/openmm/openmm.git
+          cd openmm
+          git checkout $GIT_REVISION
+          git apply ${{ github.workspace }}/devtools/patches/library_path.patch
+
+      - name: "Configure build with CMake"
+        shell: bash -l {0}
+        run: |
+          cd openmm
+          mkdir build
+          cd build
+          cmake .. -DCMAKE_INSTALL_PREFIX=${HOME}/openmm-install
+
+      - name: "Build OpenMM"
+        shell: bash -l {0}
+        run: |
+          cd openmm/build
+          make -j4 install
+          make -j4 PythonInstall
+
+      - name: "Build wheel"
+        shell: bash -l {0}
+        run: |
+          cd openmm/build
+          make PythonBdistWheel
+          export DYLD_LIBRARY_PATH=${HOME}/openmm-install/lib
+          cd python/dist
+          python ${{ github.workspace }}/devtools/scripts/add_plugins_and_headers.py "${HOME}/openmm-install"
+          python ${{ github.workspace }}/devtools/scripts/fix_mac_rpath.py .
+          python -m delocate.cmd.delocate_wheel -w fixed -v *.whl -L "../OpenMM.libs/lib" --sanitize-rpaths \
+            --exclude libOpenMM.dylib \
+            --exclude libOpenMMOpenCL.dylib \
+            --exclude libOpenMMDrude.dylib \
+            --exclude libOpenMMDrudeOpenCL.dylib \
+            --exclude libOpenMMAmoeba.dylib \
+            --exclude libOpenMMAmoebaOpenCL.dylib \
+            --exclude libOpenMMRPMD.dylib \
+            --exclude libOpenMMRPMDOpenCL.dylib
+
+      - name: "Test the wheel"
+        shell: bash -l {0}
+        run: |
+          set -x
+          python -m venv "${HOME}/test_env"
+          source "${HOME}/test_env/bin/activate"
+          cd openmm/build/python/dist
+          pip install --pre fixed/*
+          python -m openmm.testInstallation
+          python -c "import openmm as mm; print(mm.version.openmm_library_path)"
+          python -c "import openmm as mm; print('---Loaded---', *mm.pluginLoadedLibNames, '---Failed---', *mm.Platform.getPluginLoadFailures(), sep='\n')"
+
+      - name: "Upload the wheel"
+        uses: actions/upload-artifact@v4
+        with:
+          name: openmm-wheel-mac-${{matrix.python-version}}
+          path: openmm/build/python/dist/fixed
+          retention-days: 10
 
   linux:
     runs-on: ${{ matrix.os }}
@@ -114,7 +114,7 @@ jobs:
     name: "${{ matrix.name }} ${{ matrix.python-version}}"
     strategy:
       matrix:
-        python-version: ["3.10"]
+        python-version: ["3.10", "3.11", "3.12", "3.13"]
         include:
           - name: Linux x86
             os: ubuntu-latest
@@ -256,149 +256,149 @@ jobs:
         with:
           name: openmm-wheel-linux-${{matrix.python-version}}
           path: openmm/build/python/dist/fixed
-          retention-days: 3
+          retention-days: 10
 
-#  windows:
-#    runs-on: ${{ matrix.os }}
-#    name: "${{ matrix.name }} ${{ matrix.python-version}}"
-#    strategy:
-#      matrix:
-#        python-version: ["3.10", "3.11", "3.12", "3.13"]
-#        include:
-#          - name: Windows x86
-#            os: windows-latest
-#            requirements: windows
-#            cuda-version: "12.5.0"
-#            hip-version: "6"
-#
-#    steps:
-#      - uses: actions/checkout@v3
-#
-#      - uses: mamba-org/setup-micromamba@v1
-#        with:
-#          environment-name: build-env
-#          create-args: >-
-#            python=${{ matrix.python-version }}
-#          init-shell: bash cmd.exe powershell
-#
-#      - name: "Install dependencies with pip"
-#        shell: cmd /C call {0}
-#        run: pip install -v -r devtools/requirements/${{ matrix.requirements }}.txt
-#
-#      - name: "Install dependencies with choco"
-#        uses: crazy-max/ghaction-chocolatey@v3
-#        with:
-#          args:
-#            install doxygen.install jom
-#
-#      - name: "Install CUDA"
-#        uses: Jimver/cuda-toolkit@v0.2.16
-#        id: cuda-toolkit
-#        with:
-#          cuda: ${{matrix.cuda-version}}
-#          method: 'network'
-#          sub-packages: '["nvcc", "nvrtc", "nvrtc_dev", "cufft", "cufft_dev", "opencl", "cudart", "cuda_profiler_api"]'
-#
-#      - name: "Install HIP"
-#        shell: cmd /C call {0}
-#        run: |
-#          curl.exe --output HIP.exe --url https://download.amd.com/developer/eula/rocm-hub/AMD-Software-PRO-Edition-24.Q3-Win10-Win11-For-HIP.exe
-#          HIP.exe -install
-#
-#      - name: "Check out OpenMM source code"
-#        shell: cmd /C call {0}
-#        run: |
-#          git clone https://github.com/openmm/openmm.git
-#          cd openmm
-#          git checkout %GIT_REVISION%
-#          git apply %GITHUB_WORKSPACE%\devtools\patches\library_path.patch
-#          git apply %GITHUB_WORKSPACE%\devtools\patches\cxx11_abi.patch
-#          git apply %GITHUB_WORKSPACE%\devtools\patches\extras_require.patch
-#
-#      - name: "Configure build with CMake"
-#        shell: cmd /C call {0}
-#        run: |
-#          call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
-#          cd openmm
-#          mkdir build
-#          cd build
-#          cmake -G "NMake Makefiles JOM" ^
-#                -DCMAKE_BUILD_TYPE=Release ^
-#                -DCMAKE_INSTALL_PREFIX=%USERPROFILE%/openmm-install ^
-#                -DCMAKE_PREFIX_PATH="%USERPROFILE%/openmm-install;C:\Program Files\AMD\ROCm\6.1" ^
-#                -DCMAKE_CXX_COMPILER=cl.exe ^
-#                -DCMAKE_C_COMPILER=cl.exe ^
-#                -DOPENCL_INCLUDE_DIR="${{steps.cuda-toolkit.outputs.CUDA_PATH}}/include" ^
-#                -DOPENCL_LIBRARY="${{steps.cuda-toolkit.outputs.CUDA_PATH}}/lib/x64/OpenCL.lib" ^
-#                -DHIP_PLATFORM=amd ^
-#                ..
-#
-#      - name: "Build OpenMM"
-#        shell: cmd /C call {0}
-#        run: |
-#          call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
-#          cd openmm\build
-#          jom -j 4 install
-#          jom -j 4 PythonInstall
-#
-#      - name: "Build wheel"
-#        shell: cmd /C call {0}
-#        run: |
-#          cd openmm\build
-#          set FULL_CUDA_VERSION=${{ matrix.cuda-version }}
-#          set CUDA_VERSION=%FULL_CUDA_VERSION:~0,2%
-#          jom PythonBdistWheel
-#          cd python\dist
-#          python %GITHUB_WORKSPACE%\devtools\scripts\add_plugins_and_headers.py "%USERPROFILE%\openmm-install" "!CUDA" "!HIP"
-#
-#      - name: "Build CUDA wheel"
-#        shell: cmd /C call {0}
-#        run: |
-#          cd %GITHUB_WORKSPACE%\devtools\cuda
-#          findstr "OPENMM_VERSION:STRING=" %GITHUB_WORKSPACE%\openmm\build\CMakeCache.txt > version.txt
-#          set /P OPENMM_VERSION_LINE= < version.txt
-#          set OPENMM_VERSION=%OPENMM_VERSION_LINE:~22%
-#          set FULL_CUDA_VERSION=${{ matrix.cuda-version }}
-#          set CUDA_VERSION=%FULL_CUDA_VERSION:~0,2%
-#          python setup.py bdist_wheel
-#          cd dist
-#          python %GITHUB_WORKSPACE%\devtools\scripts\add_plugins_and_headers.py "%USERPROFILE%\openmm-install" "CUDA"
-#          move *.whl %GITHUB_WORKSPACE%\openmm\build\python\dist
-#
-#      - name: "Build HIP wheel"
-#        shell: cmd /C call {0}
-#        run: |
-#          cd %GITHUB_WORKSPACE%\devtools\hip
-#          findstr "OPENMM_VERSION:STRING=" %GITHUB_WORKSPACE%\openmm\build\CMakeCache.txt > version.txt
-#          set /P OPENMM_VERSION_LINE= < version.txt
-#          set OPENMM_VERSION=%OPENMM_VERSION_LINE:~22%
-#          set HIP_VERSION=${{ matrix.hip-version }}
-#          python setup.py bdist_wheel
-#          cd dist
-#          python %GITHUB_WORKSPACE%\devtools\scripts\add_plugins_and_headers.py "%USERPROFILE%\openmm-install" "HIP"
-#          move *.whl %GITHUB_WORKSPACE%\openmm\build\python\dist
-#
-#      - name: "Rename wheels"
-#        shell: cmd /C call {0}
-#        run: |
-#          python %GITHUB_WORKSPACE%\devtools\scripts\rename_wheels.py %GITHUB_WORKSPACE%\openmm\build\python\dist
-#
-#      - name: "Test the wheel"
-#        shell: cmd /C call {0}
-#        run: |
-#          python -m venv "%USERPROFILE%\test_env"
-#          cd openmm\build\python\dist
-#          set FULL_CUDA_VERSION=${{ matrix.cuda-version }}
-#          set CUDA_VERSION=%FULL_CUDA_VERSION:~0,2%
-#          %USERPROFILE%\test_env\Scripts\pip install "numpy"
-#          %USERPROFILE%\test_env\Scripts\pip install --pre --find-links . openmm[cuda%CUDA_VERSION%,hip${{ matrix.hip-version }}]
-#          %USERPROFILE%\test_env\Scripts\python -m openmm.testInstallation
-#          %USERPROFILE%\test_env\Scripts\python -c "import openmm as mm; print(mm.version.openmm_library_path)"
-#          %USERPROFILE%\test_env\Scripts\python -c "import openmm as mm; print('---Loaded---', *mm.pluginLoadedLibNames, '---Failed---', *mm.Platform.getPluginLoadFailures(), sep='\n')"
-#
-#      - name: "Upload the wheel"
-#        uses: actions/upload-artifact@v4
-#        with:
-#          name: openmm-wheel-windows-${{matrix.python-version}}
-#          path: openmm\build\python\dist
-#          retention-days: 3
+  windows:
+    runs-on: ${{ matrix.os }}
+    name: "${{ matrix.name }} ${{ matrix.python-version}}"
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.11", "3.12", "3.13"]
+        include:
+          - name: Windows x86
+            os: windows-latest
+            requirements: windows
+            cuda-version: "12.5.0"
+            hip-version: "6"
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: mamba-org/setup-micromamba@v1
+        with:
+          environment-name: build-env
+          create-args: >-
+            python=${{ matrix.python-version }}
+          init-shell: bash cmd.exe powershell
+
+      - name: "Install dependencies with pip"
+        shell: cmd /C call {0}
+        run: pip install -v -r devtools/requirements/${{ matrix.requirements }}.txt
+
+      - name: "Install dependencies with choco"
+        uses: crazy-max/ghaction-chocolatey@v3
+        with:
+          args:
+            install doxygen.install jom
+
+      - name: "Install CUDA"
+        uses: Jimver/cuda-toolkit@v0.2.16
+        id: cuda-toolkit
+        with:
+          cuda: ${{matrix.cuda-version}}
+          method: 'network'
+          sub-packages: '["nvcc", "nvrtc", "nvrtc_dev", "cufft", "cufft_dev", "opencl", "cudart", "cuda_profiler_api"]'
+
+      - name: "Install HIP"
+        shell: cmd /C call {0}
+        run: |
+          curl.exe --output HIP.exe --url https://download.amd.com/developer/eula/rocm-hub/AMD-Software-PRO-Edition-24.Q3-Win10-Win11-For-HIP.exe
+          HIP.exe -install
+
+      - name: "Check out OpenMM source code"
+        shell: cmd /C call {0}
+        run: |
+          git clone https://github.com/openmm/openmm.git
+          cd openmm
+          git checkout %GIT_REVISION%
+          git apply %GITHUB_WORKSPACE%\devtools\patches\library_path.patch
+          git apply %GITHUB_WORKSPACE%\devtools\patches\cxx11_abi.patch
+          git apply %GITHUB_WORKSPACE%\devtools\patches\extras_require.patch
+
+      - name: "Configure build with CMake"
+        shell: cmd /C call {0}
+        run: |
+          call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
+          cd openmm
+          mkdir build
+          cd build
+          cmake -G "NMake Makefiles JOM" ^
+                -DCMAKE_BUILD_TYPE=Release ^
+                -DCMAKE_INSTALL_PREFIX=%USERPROFILE%/openmm-install ^
+                -DCMAKE_PREFIX_PATH="%USERPROFILE%/openmm-install;C:\Program Files\AMD\ROCm\6.1" ^
+                -DCMAKE_CXX_COMPILER=cl.exe ^
+                -DCMAKE_C_COMPILER=cl.exe ^
+                -DOPENCL_INCLUDE_DIR="${{steps.cuda-toolkit.outputs.CUDA_PATH}}/include" ^
+                -DOPENCL_LIBRARY="${{steps.cuda-toolkit.outputs.CUDA_PATH}}/lib/x64/OpenCL.lib" ^
+                -DHIP_PLATFORM=amd ^
+                ..
+
+      - name: "Build OpenMM"
+        shell: cmd /C call {0}
+        run: |
+          call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
+          cd openmm\build
+          jom -j 4 install
+          jom -j 4 PythonInstall
+
+      - name: "Build wheel"
+        shell: cmd /C call {0}
+        run: |
+          cd openmm\build
+          set FULL_CUDA_VERSION=${{ matrix.cuda-version }}
+          set CUDA_VERSION=%FULL_CUDA_VERSION:~0,2%
+          jom PythonBdistWheel
+          cd python\dist
+          python %GITHUB_WORKSPACE%\devtools\scripts\add_plugins_and_headers.py "%USERPROFILE%\openmm-install" "!CUDA" "!HIP"
+
+      - name: "Build CUDA wheel"
+        shell: cmd /C call {0}
+        run: |
+          cd %GITHUB_WORKSPACE%\devtools\cuda
+          findstr "OPENMM_VERSION:STRING=" %GITHUB_WORKSPACE%\openmm\build\CMakeCache.txt > version.txt
+          set /P OPENMM_VERSION_LINE= < version.txt
+          set OPENMM_VERSION=%OPENMM_VERSION_LINE:~22%
+          set FULL_CUDA_VERSION=${{ matrix.cuda-version }}
+          set CUDA_VERSION=%FULL_CUDA_VERSION:~0,2%
+          python setup.py bdist_wheel
+          cd dist
+          python %GITHUB_WORKSPACE%\devtools\scripts\add_plugins_and_headers.py "%USERPROFILE%\openmm-install" "CUDA"
+          move *.whl %GITHUB_WORKSPACE%\openmm\build\python\dist
+
+      - name: "Build HIP wheel"
+        shell: cmd /C call {0}
+        run: |
+          cd %GITHUB_WORKSPACE%\devtools\hip
+          findstr "OPENMM_VERSION:STRING=" %GITHUB_WORKSPACE%\openmm\build\CMakeCache.txt > version.txt
+          set /P OPENMM_VERSION_LINE= < version.txt
+          set OPENMM_VERSION=%OPENMM_VERSION_LINE:~22%
+          set HIP_VERSION=${{ matrix.hip-version }}
+          python setup.py bdist_wheel
+          cd dist
+          python %GITHUB_WORKSPACE%\devtools\scripts\add_plugins_and_headers.py "%USERPROFILE%\openmm-install" "HIP"
+          move *.whl %GITHUB_WORKSPACE%\openmm\build\python\dist
+
+      - name: "Rename wheels"
+        shell: cmd /C call {0}
+        run: |
+          python %GITHUB_WORKSPACE%\devtools\scripts\rename_wheels.py %GITHUB_WORKSPACE%\openmm\build\python\dist
+
+      - name: "Test the wheel"
+        shell: cmd /C call {0}
+        run: |
+          python -m venv "%USERPROFILE%\test_env"
+          cd openmm\build\python\dist
+          set FULL_CUDA_VERSION=${{ matrix.cuda-version }}
+          set CUDA_VERSION=%FULL_CUDA_VERSION:~0,2%
+          %USERPROFILE%\test_env\Scripts\pip install "numpy"
+          %USERPROFILE%\test_env\Scripts\pip install --pre --find-links . openmm[cuda%CUDA_VERSION%,hip${{ matrix.hip-version }}]
+          %USERPROFILE%\test_env\Scripts\python -m openmm.testInstallation
+          %USERPROFILE%\test_env\Scripts\python -c "import openmm as mm; print(mm.version.openmm_library_path)"
+          %USERPROFILE%\test_env\Scripts\python -c "import openmm as mm; print('---Loaded---', *mm.pluginLoadedLibNames, '---Failed---', *mm.Platform.getPluginLoadFailures(), sep='\n')"
+
+      - name: "Upload the wheel"
+        uses: actions/upload-artifact@v4
+        with:
+          name: openmm-wheel-windows-${{matrix.python-version}}
+          path: openmm\build\python\dist
+          retention-days: 10
