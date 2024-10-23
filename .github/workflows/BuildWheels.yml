@@ -15,7 +15,7 @@ on:
 jobs:
   mac:
     runs-on: ${{ matrix.os }}
-    name: ${{ matrix.name }}
+    name: "${{ matrix.name }} ${{ matrix.python-version}}"
     strategy:
       matrix:
         python-version: ["3.10", "3.11", "3.12", "3.13"]
@@ -111,7 +111,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     container:
       image: quay.io/pypa/manylinux_2_28_x86_64
-    name: ${{ matrix.name }}
+    name: "${{ matrix.name }} ${{ matrix.python-version}}"
     strategy:
       matrix:
         python-version: ["3.10", "3.11", "3.12", "3.13"]
@@ -260,7 +260,7 @@ jobs:
 
   windows:
     runs-on: ${{ matrix.os }}
-    name: ${{ matrix.name }}
+    name: "${{ matrix.name }} ${{ matrix.python-version}}"
     strategy:
       matrix:
         python-version: ["3.10", "3.11", "3.12", "3.13"]

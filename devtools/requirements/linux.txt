@@ -5,3 +5,4 @@ numpy
 delocate
 wheel
 auditwheel
+setuptools
