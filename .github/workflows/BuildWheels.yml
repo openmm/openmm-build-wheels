@@ -19,8 +19,8 @@ jobs:
     strategy:
       matrix:
         python-version: ["3.10", "3.11", "3.12", "3.13"]
-        os: ["macos-latest", "macos-13"]
-        requirements: macos
+        os: [macos-latest, macos-13]
+        requirements: [macos]
 
     steps:
       - uses: actions/checkout@v4
