@@ -15,17 +15,12 @@ on:
 jobs:
   mac:
     runs-on: ${{ matrix.os }}
-    name: "${{ matrix.name }} ${{ matrix.python-version}}"
+    name: "${{ matrix.os }} ${{ matrix.python-version}}"
     strategy:
       matrix:
         python-version: ["3.10", "3.11", "3.12", "3.13"]
-        include:
-          - name: MacOS ARM
-            os: macos-latest
-            requirements: macos
-          - name: MacOS x86
-            os: macos-13
-            requirements: macos
+        os: ["macos-latest", "macos-13"]
+        requirements: macos
 
     steps:
       - uses: actions/checkout@v4
