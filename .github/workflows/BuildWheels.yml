@@ -101,7 +101,7 @@ jobs:
       - name: "Upload the wheel"
         uses: actions/upload-artifact@v4
         with:
-          name: openmm-wheel-mac-${{matrix.python-version}}
+          name: openmm-wheel-${{matrix.os}}-${{matrix.python-version}}
           path: openmm/build/python/dist/fixed
           retention-days: 10
 
