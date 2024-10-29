@@ -23,6 +23,9 @@ jobs:
           - name: MacOS ARM
             os: macos-latest
             requirements: macos
+          - name: MacOS x86
+            os: macos-13
+            requirements: macos
 
     steps:
       - uses: actions/checkout@v4
