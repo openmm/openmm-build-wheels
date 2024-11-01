@@ -10,14 +10,12 @@ if len(sys.argv) == 2:
 else:
     platforms = sys.argv[2:]
     def ignore(dir, files):
-        print("platforms:", platforms)
         ignorefiles = []
         for platform in platforms:
             if platform[0] == '!':
                 ignorefiles += [f for f in files if platform[1:] in f]
             else:
                 ignorefiles += [f for f in files if platform not in f and not isdir(join(dir, f))]
-        print("ignore:", ignorefiles)
         return ignorefiles
 for filename in os.listdir('.'):
     if filename.endswith('.whl'):
