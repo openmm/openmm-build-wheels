@@ -1,8 +1,8 @@
 name: OpenMM-Build-Wheels
 
 env:
-  GIT_REVISION: 'ba9113f'
-  VERSION_SUFFIX: 'rc1'
+  GIT_REVISION: '5377094'
+  VERSION_SUFFIX: 'rc2.post1'
 
 on:
   push:
@@ -188,6 +188,7 @@ jobs:
         run: |
           cd openmm/build
           export CUDA_VERSION=$(cut -d '-' -f1 <<< ${{ matrix.cuda-version }})
+          export HIP_VERSION=${{ matrix.hip-version }}
           make PythonBdistWheel
           export LD_LIBRARY_PATH=${HOME}/openmm-install/lib
           cd python/dist
@@ -345,6 +346,7 @@ jobs:
           cd openmm\build
           set FULL_CUDA_VERSION=${{ matrix.cuda-version }}
           set CUDA_VERSION=%FULL_CUDA_VERSION:~0,2%
+          set HIP_VERSION=${{ matrix.hip-version }}
           jom PythonBdistWheel
           cd python\dist
           python %GITHUB_WORKSPACE%\devtools\scripts\add_plugins_and_headers.py "%USERPROFILE%\openmm-install" "!CUDA" "!HIP"
