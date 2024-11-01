@@ -191,11 +191,7 @@ jobs:
           make PythonBdistWheel
           export LD_LIBRARY_PATH=${HOME}/openmm-install/lib
           cd python/dist
-          echo "First"
-          zipinfo OpenMM-*.whl | grep HIP
           python $GITHUB_WORKSPACE/devtools/scripts/add_plugins_and_headers.py "${HOME}/openmm-install" "!CUDA" "!HIP"
-          echo "Second"
-          zipinfo OpenMM-*.whl | grep HIP
           auditwheel repair -w fixed -L ".libs/lib" --plat manylinux_2_28_x86_64 *.whl \
             --exclude libOpenMM.so \
             --exclude libOpenMMCUDA.so \
@@ -212,8 +208,6 @@ jobs:
             --exclude libnvrtc.so.12 \
             --exclude libhiprtc.so.6 \
             --exclude libamdhip64.so.6
-          echo "Third"
-          zipinfo fixed/OpenMM-*.whl | grep HIP
 
       - name: "Build CUDA wheel"
         shell: bash -l {0}
