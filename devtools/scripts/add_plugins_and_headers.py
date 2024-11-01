@@ -11,13 +11,14 @@ else:
     platforms = sys.argv[2:]
     def ignore(dir, files):
         print("platforms:", platforms)
+        ignore = []
         for platform in platforms:
             if platform[0] == '!':
-                files = [f for f in files if platform[1:] in f]
+                ignore += [f for f in files if platform[1:] in f]
             else:
-                files = [f for f in files if platform not in f and not isdir(join(dir, f))]
-        print("files:", files)
-        return files
+                ignore += [f for f in files if platform not in f and not isdir(join(dir, f))]
+        print("ignore:", ignore)
+        return ignore
 for filename in os.listdir('.'):
     if filename.endswith('.whl'):
         with wheeltools.InWheel(filename, filename):
