@@ -1,9 +1,9 @@
 diff --git a/wrappers/python/setup.py b/wrappers/python/setup.py
-index d3ed414f9..07d1dd70f 100644
+index 1dc49672c..a4b4ee581 100644
 --- a/wrappers/python/setup.py
 +++ b/wrappers/python/setup.py
-@@ -155,6 +155,9 @@ def buildKeywordDictionary(major_version_num=MAJOR_VERSION_NUM,
-                                           "openmm.app" : ['data/*.xml', 'data/*.pdb', 'data/amber14/*.xml', 'data/charmm36/*.xml', 'data/implicit/*.xml'],
+@@ -156,6 +156,9 @@ def buildKeywordDictionary(major_version_num=MAJOR_VERSION_NUM,
+                                           "openmm.app" : ['data/*.xml', 'data/*.pdb', 'data/amber14/*.xml', 'data/amber19/*.xml', 'data/charmm36/*.xml', 'data/implicit/*.xml'],
                                            "openmm.app.internal" : []}
      setupKeywords["install_requires"]  = ["numpy"]
 +    CUDA_VERSION=os.getenv('CUDA_VERSION')

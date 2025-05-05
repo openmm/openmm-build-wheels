@@ -1,8 +1,8 @@
 name: OpenMM-Build-Wheels
 
 env:
-  GIT_REVISION: '5377094'
-  VERSION_SUFFIX: ''
+  GIT_REVISION: '371f3a3'
+  VERSION_SUFFIX: 'b1'
 
 on:
   push:
@@ -174,7 +174,8 @@ jobs:
             -DCMAKE_CXX_FLAGS='-D_GLIBCXX_USE_CXX11_ABI=0' \
             -DOPENMM_BUILD_OPENCL_LIB=ON \
             -DOPENCL_INCLUDE_DIR=/usr/include/CL \
-            -DOPENCL_LIBRARY=/usr/lib64/libOpenCL.so.1
+            -DOPENCL_LIBRARY=/usr/lib64/libOpenCL.so.1 \
+            -DCMAKE_POLICY_VERSION_MINIMUM=3.5
 
       - name: "Build OpenMM"
         shell: bash -l {0}
@@ -330,6 +331,7 @@ jobs:
                 -DOPENCL_INCLUDE_DIR="${{steps.cuda-toolkit.outputs.CUDA_PATH}}/include" ^
                 -DOPENCL_LIBRARY="${{steps.cuda-toolkit.outputs.CUDA_PATH}}/lib/x64/OpenCL.lib" ^
                 -DHIP_PLATFORM=amd ^
+                -DCMAKE_POLICY_VERSION_MINIMUM=3.5 ^
                 ..
 
       - name: "Build OpenMM"
