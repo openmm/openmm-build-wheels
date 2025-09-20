@@ -1,8 +1,8 @@
 name: OpenMM-Build-Wheels
 
 env:
-  GIT_REVISION: '6e13f13'
-  VERSION_SUFFIX: ''
+  GIT_REVISION: '5b07f0d'
+  VERSION_SUFFIX: 'beta'
 
 on:
   push:
@@ -303,6 +303,7 @@ jobs:
         shell: cmd /C call {0}
         run: |
           curl.exe --output HIP.exe --url https://download.amd.com/developer/eula/rocm-hub/AMD-Software-PRO-Edition-24.Q3-Win10-Win11-For-HIP.exe
+          curl.exe --output HIP.exe --url https://download.amd.com/developer/eula/rocm-hub/AMD-Software-PRO-Edition-25.Q3-Win10-Win11-For-HIP.exe
           HIP.exe -install
 
       - name: "Check out OpenMM source code"
