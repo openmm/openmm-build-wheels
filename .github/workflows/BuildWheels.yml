@@ -113,11 +113,14 @@ jobs:
     strategy:
       matrix:
         python-version: ["3.10", "3.11", "3.12", "3.13"]
+        name: [Linux x86]
+        os: [ubuntu-latest]
+        requirements: [linux]
         include:
-          - name: Linux x86
-            os: ubuntu-latest
-            requirements: linux
-            cuda-version: "12-3"
+          - cuda-version: "12-3"
+            cuda-arch: "x86_64"
+            hip-version: "6"
+          - cuda-version: "13-0"
             cuda-arch: "x86_64"
             hip-version: "6"
 
