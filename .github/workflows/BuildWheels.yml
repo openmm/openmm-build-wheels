@@ -306,6 +306,7 @@ jobs:
           method: 'network'
           sub-packages: '["nvcc", "nvrtc", "nvrtc_dev", "cufft", "cufft_dev", "opencl", "cudart", "cuda_profiler_api"]'
           use-local-cache: 'false'
+          use-github-cache: 'false'
 
       - name: "Install HIP"
         shell: cmd /C call {0}
