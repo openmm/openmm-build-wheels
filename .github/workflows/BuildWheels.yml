@@ -299,7 +299,7 @@ jobs:
             install doxygen.install jom
 
       - name: "Install CUDA"
-        uses: Jimver/cuda-toolkit@v0.2.24
+        uses: Jimver/cuda-toolkit@v0.2.27
         id: cuda-toolkit
         with:
           cuda: ${{matrix.cuda-version}}
