@@ -258,21 +258,24 @@ jobs:
       - name: "Upload the wheel"
         uses: actions/upload-artifact@v4
         with:
-          name: openmm-wheel-linux-${{matrix.python-version}}
+          name: openmm-wheel-linux-${{matrix.python-version}}-cuda-${{matrix.cuda-version}}
           path: openmm/build/python/dist/fixed
           retention-days: 10
 
   windows:
     runs-on: ${{ matrix.os }}
-    name: "${{ matrix.name }} ${{ matrix.python-version}}"
+    name: "${{ matrix.name }} ${{ matrix.python-version}} CUDA ${{ matrix.cuda-version }} HIP ${{ matrix.hip-version }}"
     strategy:
       matrix:
         python-version: ["3.10", "3.11", "3.12", "3.13"]
+        cuda-version: ["12-3", "13-0"]
+        name: [Windows x86]
+        os: [windows-latest]
+        requirements: [windows]
         include:
-          - name: Windows x86
-            os: windows-latest
-            requirements: windows
-            cuda-version: "12.5.0"
+          - cuda-version: "12.5.0"
+            hip-version: "6"
+          - cuda-version: "13.0.0"
             hip-version: "6"
 
     steps:
@@ -306,7 +309,6 @@ jobs:
       - name: "Install HIP"
         shell: cmd /C call {0}
         run: |
-          curl.exe --output HIP.exe --url https://download.amd.com/developer/eula/rocm-hub/AMD-Software-PRO-Edition-24.Q3-Win10-Win11-For-HIP.exe
           curl.exe --output HIP.exe --url https://download.amd.com/developer/eula/rocm-hub/AMD-Software-PRO-Edition-25.Q3-Win10-Win11-For-HIP.exe
           HIP.exe -install
 
@@ -406,6 +408,6 @@ jobs:
       - name: "Upload the wheel"
         uses: actions/upload-artifact@v4
         with:
-          name: openmm-wheel-windows-${{matrix.python-version}}
+          name: openmm-wheel-windows-${{matrix.python-version}}-cuda-${{matrix.cuda-version}}
           path: openmm\build\python\dist
           retention-days: 10
