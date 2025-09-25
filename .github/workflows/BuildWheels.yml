@@ -109,18 +109,19 @@ jobs:
     runs-on: ${{ matrix.os }}
     container:
       image: quay.io/pypa/manylinux_2_28_x86_64
-    name: "${{ matrix.name }} ${{ matrix.python-version}} CUDA ${{ matrix.cuda-version }} HIP ${{ matrix.hip-version }}"
+    name: "${{ matrix.name }} ${{ matrix.python-version}}"
     strategy:
       matrix:
         python-version: ["3.10", "3.11", "3.12", "3.13"]
-        name: [Linux x86]
         os: [ubuntu-latest]
         requirements: [linux]
         include:
-          - cuda-version: "12-3"
+          - name: Linux x86 CUDA 12 HIP 6
+            cuda-version: "12-3"
             cuda-arch: "x86_64"
             hip-version: "6"
-          - cuda-version: "13-0"
+          - name: Linux x86 CUDA 13 HIP 6
+            cuda-version: "13-0"
             cuda-arch: "x86_64"
             hip-version: "6"
 
