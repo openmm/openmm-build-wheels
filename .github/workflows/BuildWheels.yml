@@ -300,7 +300,7 @@ jobs:
 
       - name: "Install CUDA 12"
         uses: Jimver/cuda-toolkit@v0.2.24
-        id: cuda-toolkit
+        id: cuda-toolkit12
         if: startsWith(matrix.cuda-version, '12')
         with:
           cuda: ${{matrix.cuda-version}}
@@ -311,7 +311,7 @@ jobs:
       - name: "Install CUDA 13"
         # Switch back to Jimver/cuda-toolkit once https://github.com/Jimver/cuda-toolkit/issues/395 gets fixed
         uses: N-Storm/cuda-toolkit@v0.2.27m
-        id: cuda-toolkit
+        id: cuda-toolkit13
         if: startsWith(matrix.cuda-version, '13')
         with:
           cuda: ${{matrix.cuda-version}}
@@ -342,14 +342,19 @@ jobs:
           cd openmm
           mkdir build
           cd build
+          IF ${{matrix.cuda-version}} EQU '12.5.0' (
+            set CUDA_PATH="${{steps.cuda-toolkit12.outputs.CUDA_PATH}}"
+          ) ELSE (
+            set CUDA_PATH="${{steps.cuda-toolkit13.outputs.CUDA_PATH}}"
+          )
           cmake -G "NMake Makefiles JOM" ^
                 -DCMAKE_BUILD_TYPE=Release ^
                 -DCMAKE_INSTALL_PREFIX=%USERPROFILE%/openmm-install ^
                 -DCMAKE_PREFIX_PATH="%USERPROFILE%/openmm-install;C:\Program Files\AMD\ROCm\6.1" ^
                 -DCMAKE_CXX_COMPILER=cl.exe ^
                 -DCMAKE_C_COMPILER=cl.exe ^
-                -DOPENCL_INCLUDE_DIR="${{steps.cuda-toolkit.outputs.CUDA_PATH}}/include" ^
-                -DOPENCL_LIBRARY="${{steps.cuda-toolkit.outputs.CUDA_PATH}}/lib/x64/OpenCL.lib" ^
+                -DOPENCL_INCLUDE_DIR=%CUDA_PATH%/include ^
+                -DOPENCL_LIBRARY=%CUDA_PATH%/lib/x64/OpenCL.lib ^
                 -DHIP_PLATFORM=amd ^
                 -DCMAKE_POLICY_VERSION_MINIMUM=3.5 ^
                 ..
