@@ -123,7 +123,7 @@ jobs:
             hip-version: "6"
           - cuda-version: "13-0"
             cuda-arch: "x86_64"
-            hip-version: "6"
+            hip-version: "7"
 
     steps:
       - uses: actions/checkout@v3
@@ -150,10 +150,18 @@ jobs:
                          cuda-libraries-${{ matrix.cuda-version }}.${{ matrix.cuda-arch }} \
                          cuda-libraries-devel-${{ matrix.cuda-version }}.${{ matrix.cuda-arch }}
 
-      - name: "Install HIP"
+      - name: "Install HIP 6"
+        if: matrix.hip-version == '6'
         run: |
           yum install -y epel-release
           yum install -y https://repo.radeon.com/amdgpu-install/6.2.2/el/8.10/amdgpu-install-6.2.60202-1.el8.noarch.rpm
+          yum install -y rocm-device-libs hip-devel hip-runtime-amd hipcc
+
+      - name: "Install HIP 7"
+        if: matrix.hip-version == '7'
+        run: |
+          yum install -y epel-release
+          yum install -y https://repo.radeon.com/amdgpu-install/7.0.1/el/9.6/amdgpu-install-7.0.1.70001-1.el9.noarch.rpm
           yum install -y rocm-device-libs hip-devel hip-runtime-amd hipcc
 
       - name: "Check out OpenMM source code"
