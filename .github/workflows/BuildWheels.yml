@@ -306,7 +306,6 @@ jobs:
           cuda: ${{matrix.cuda-version}}
           method: 'network'
           sub-packages: '["nvcc", "nvrtc", "nvrtc_dev", "cufft", "cufft_dev", "opencl", "cudart", "cuda_profiler_api"]'
-          use-github-cache: 'false'
 
       - name: "Install CUDA 13"
         # Switch back to Jimver/cuda-toolkit once https://github.com/Jimver/cuda-toolkit/issues/395 gets fixed
@@ -347,7 +346,6 @@ jobs:
           ) ELSE (
             set CUDA_PATH="${{steps.cuda-toolkit13.outputs.CUDA_PATH}}"
           )
-          echo %CUDA_PATH%
           cmake -G "NMake Makefiles JOM" ^
                 -DCMAKE_BUILD_TYPE=Release ^
                 -DCMAKE_INSTALL_PREFIX=%USERPROFILE%/openmm-install ^
