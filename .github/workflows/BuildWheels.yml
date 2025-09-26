@@ -298,14 +298,25 @@ jobs:
           args:
             install doxygen.install jom
 
-      - name: "Install CUDA"
-        # Switch back to Jimver/cuda-toolkit once https://github.com/Jimver/cuda-toolkit/issues/395 gets fixed
-        uses: N-Storm/cuda-toolkit@v0.2.27m
+      - name: "Install CUDA 12"
+        uses: Jimver/cuda-toolkit@v0.2.24
         id: cuda-toolkit
+        if: startsWith(matrix.cuda-version, '12')
         with:
           cuda: ${{matrix.cuda-version}}
           method: 'network'
           sub-packages: '["nvcc", "nvrtc", "nvrtc_dev", "cufft", "cufft_dev", "opencl", "cudart", "cuda_profiler_api"]'
+          use-github-cache: 'false'
+
+      - name: "Install CUDA 13"
+        # Switch back to Jimver/cuda-toolkit once https://github.com/Jimver/cuda-toolkit/issues/395 gets fixed
+        uses: N-Storm/cuda-toolkit@v0.2.27m
+        id: cuda-toolkit
+        if: startsWith(matrix.cuda-version, '13')
+        with:
+          cuda: ${{matrix.cuda-version}}
+          method: 'network'
+          sub-packages: '["nvcc", "nvrtc", "nvrtc_dev", "cufft", "cufft_dev", "opencl", "cudart", "crt", "cuda_profiler_api"]'
           use-github-cache: 'false'
 
       - name: "Install HIP"
