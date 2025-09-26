@@ -342,11 +342,12 @@ jobs:
           cd openmm
           mkdir build
           cd build
-          IF ${{matrix.cuda-version}} EQU '12.5.0' (
+          IF '${{matrix.cuda-version}}' EQU '12.5.0' (
             set CUDA_PATH="${{steps.cuda-toolkit12.outputs.CUDA_PATH}}"
           ) ELSE (
             set CUDA_PATH="${{steps.cuda-toolkit13.outputs.CUDA_PATH}}"
           )
+          echo %CUDA_PATH%
           cmake -G "NMake Makefiles JOM" ^
                 -DCMAKE_BUILD_TYPE=Release ^
                 -DCMAKE_INSTALL_PREFIX=%USERPROFILE%/openmm-install ^
