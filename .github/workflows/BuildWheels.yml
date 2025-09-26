@@ -1,7 +1,7 @@
 name: OpenMM-Build-Wheels
 
 env:
-  GIT_REVISION: '5b07f0d'
+  GIT_REVISION: '064cee2'
   VERSION_SUFFIX: 'beta'
 
 on:
@@ -109,15 +109,19 @@ jobs:
     runs-on: ${{ matrix.os }}
     container:
       image: quay.io/pypa/manylinux_2_28_x86_64
-    name: "${{ matrix.name }} ${{ matrix.python-version}}"
+    name: "${{ matrix.name }} ${{ matrix.python-version}} CUDA ${{ matrix.cuda-version }} HIP ${{ matrix.hip-version }}"
     strategy:
       matrix:
         python-version: ["3.10", "3.11", "3.12", "3.13"]
+        cuda-version: ["12-3", "13-0"]
+        name: [Linux x86]
+        os: [ubuntu-latest]
+        requirements: [linux]
         include:
-          - name: Linux x86
-            os: ubuntu-latest
-            requirements: linux
-            cuda-version: "12-3"
+          - cuda-version: "12-3"
+            cuda-arch: "x86_64"
+            hip-version: "6"
+          - cuda-version: "13-0"
             cuda-arch: "x86_64"
             hip-version: "6"
 
@@ -254,21 +258,24 @@ jobs:
       - name: "Upload the wheel"
         uses: actions/upload-artifact@v4
         with:
-          name: openmm-wheel-linux-${{matrix.python-version}}
+          name: openmm-wheel-linux-${{matrix.python-version}}-cuda-${{matrix.cuda-version}}
           path: openmm/build/python/dist/fixed
           retention-days: 10
 
   windows:
     runs-on: ${{ matrix.os }}
-    name: "${{ matrix.name }} ${{ matrix.python-version}}"
+    name: "${{ matrix.name }} ${{ matrix.python-version}} CUDA ${{ matrix.cuda-version }} HIP ${{ matrix.hip-version }}"
     strategy:
       matrix:
         python-version: ["3.10", "3.11", "3.12", "3.13"]
+        cuda-version: ["12.5.0", "13.0.0"]
+        name: [Windows x86]
+        os: [windows-latest]
+        requirements: [windows]
         include:
-          - name: Windows x86
-            os: windows-latest
-            requirements: windows
-            cuda-version: "12.5.0"
+          - cuda-version: "12.5.0"
+            hip-version: "6"
+          - cuda-version: "13.0.0"
             hip-version: "6"
 
     steps:
@@ -291,18 +298,29 @@ jobs:
           args:
             install doxygen.install jom
 
-      - name: "Install CUDA"
-        uses: Jimver/cuda-toolkit@v0.2.16
-        id: cuda-toolkit
+      - name: "Install CUDA 12"
+        uses: Jimver/cuda-toolkit@v0.2.24
+        id: cuda-toolkit12
+        if: startsWith(matrix.cuda-version, '12')
         with:
           cuda: ${{matrix.cuda-version}}
           method: 'network'
           sub-packages: '["nvcc", "nvrtc", "nvrtc_dev", "cufft", "cufft_dev", "opencl", "cudart", "cuda_profiler_api"]'
 
+      - name: "Install CUDA 13"
+        # Switch back to Jimver/cuda-toolkit once https://github.com/Jimver/cuda-toolkit/issues/395 gets fixed
+        uses: N-Storm/cuda-toolkit@v0.2.27m
+        id: cuda-toolkit13
+        if: startsWith(matrix.cuda-version, '13')
+        with:
+          cuda: ${{matrix.cuda-version}}
+          method: 'network'
+          sub-packages: '["nvcc", "nvrtc", "nvrtc_dev", "cufft", "cufft_dev", "opencl", "cudart", "crt", "cuda_profiler_api"]'
+          use-github-cache: 'false'
+
       - name: "Install HIP"
         shell: cmd /C call {0}
         run: |
-          curl.exe --output HIP.exe --url https://download.amd.com/developer/eula/rocm-hub/AMD-Software-PRO-Edition-24.Q3-Win10-Win11-For-HIP.exe
           curl.exe --output HIP.exe --url https://download.amd.com/developer/eula/rocm-hub/AMD-Software-PRO-Edition-25.Q3-Win10-Win11-For-HIP.exe
           HIP.exe -install
 
@@ -323,14 +341,19 @@ jobs:
           cd openmm
           mkdir build
           cd build
+          IF '${{matrix.cuda-version}}' EQU '12.5.0' (
+            set CUDA_PATH="${{steps.cuda-toolkit12.outputs.CUDA_PATH}}"
+          ) ELSE (
+            set CUDA_PATH="${{steps.cuda-toolkit13.outputs.CUDA_PATH}}"
+          )
           cmake -G "NMake Makefiles JOM" ^
                 -DCMAKE_BUILD_TYPE=Release ^
                 -DCMAKE_INSTALL_PREFIX=%USERPROFILE%/openmm-install ^
                 -DCMAKE_PREFIX_PATH="%USERPROFILE%/openmm-install;C:\Program Files\AMD\ROCm\6.1" ^
                 -DCMAKE_CXX_COMPILER=cl.exe ^
                 -DCMAKE_C_COMPILER=cl.exe ^
-                -DOPENCL_INCLUDE_DIR="${{steps.cuda-toolkit.outputs.CUDA_PATH}}/include" ^
-                -DOPENCL_LIBRARY="${{steps.cuda-toolkit.outputs.CUDA_PATH}}/lib/x64/OpenCL.lib" ^
+                -DOPENCL_INCLUDE_DIR=%CUDA_PATH%/include ^
+                -DOPENCL_LIBRARY=%CUDA_PATH%/lib/x64/OpenCL.lib ^
                 -DHIP_PLATFORM=amd ^
                 -DCMAKE_POLICY_VERSION_MINIMUM=3.5 ^
                 ..
@@ -402,6 +425,6 @@ jobs:
       - name: "Upload the wheel"
         uses: actions/upload-artifact@v4
         with:
-          name: openmm-wheel-windows-${{matrix.python-version}}
+          name: openmm-wheel-windows-${{matrix.python-version}}-cuda-${{matrix.cuda-version}}
           path: openmm\build\python\dist
           retention-days: 10
