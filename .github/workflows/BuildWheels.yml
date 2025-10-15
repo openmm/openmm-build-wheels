@@ -163,7 +163,6 @@ jobs:
           cd openmm
           git checkout $GIT_REVISION
           git apply $GITHUB_WORKSPACE/devtools/patches/library_path.patch
-          git apply $GITHUB_WORKSPACE/devtools/patches/cxx11_abi.patch
           git apply $GITHUB_WORKSPACE/devtools/patches/extras_require.patch
           git apply $GITHUB_WORKSPACE/devtools/patches/link_args.patch
           git apply $GITHUB_WORKSPACE/devtools/patches/linux_cuda_rpath.patch
