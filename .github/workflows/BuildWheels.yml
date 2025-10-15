@@ -108,7 +108,7 @@ jobs:
   linux:
     runs-on: ${{ matrix.os }}
     container:
-      image: quay.io/pypa/manylinux_2_28_x86_64
+      image: quay.io/pypa/manylinux_2_34_x86_64
     name: "${{ matrix.name }} ${{ matrix.python-version}} CUDA ${{ matrix.cuda-version }} HIP ${{ matrix.hip-version }}"
     strategy:
       fail-fast: false
@@ -199,7 +199,7 @@ jobs:
           export LD_LIBRARY_PATH=${HOME}/openmm-install/lib
           cd python/dist
           python $GITHUB_WORKSPACE/devtools/scripts/add_plugins_and_headers.py "${HOME}/openmm-install" "!CUDA" "!HIP"
-          auditwheel repair -w fixed -L ".libs/lib" --plat manylinux_2_28_x86_64 *.whl \
+          auditwheel repair -w fixed -L ".libs/lib" --plat manylinux_2_34_x86_64 *.whl \
             --exclude libOpenMM.so \
             --exclude libOpenMMCUDA.so \
             --exclude libOpenMMHIP.so \
