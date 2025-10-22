@@ -1,8 +1,8 @@
 name: OpenMM-Build-Wheels
 
 env:
-  GIT_REVISION: '064cee2'
-  VERSION_SUFFIX: 'beta'
+  GIT_REVISION: '58378cc'
+  VERSION_SUFFIX: 'rc1'
 
 on:
   push:
@@ -19,7 +19,7 @@ jobs:
     strategy:
       matrix:
         python-version: ["3.10", "3.11", "3.12", "3.13", "3.14"]
-        os: [macos-latest, macos-13]
+        os: [macos-latest, macos-15-intel]
         requirements: [macos]
 
     steps:
