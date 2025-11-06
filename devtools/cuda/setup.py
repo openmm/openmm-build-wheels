@@ -7,13 +7,6 @@ if CUDA_VERSION == '12':
     CUDA_SUFFIX = '-cu12'
 else:
     CUDA_SUFFIX = '>=13,<14'
-print('Requires:')
-print('---------')
-print([f'nvidia-cuda-runtime{CUDA_SUFFIX}',
-                      f'nvidia-cuda-nvcc{CUDA_SUFFIX}',
-                      f'nvidia-cuda-nvrtc{CUDA_SUFFIX}',
-                      f'nvidia-cuda-cupti{CUDA_SUFFIX}',
-                      f'nvidia-cufft{CUDA_SUFFIX}'])
 setup(
     name=f'OpenMM-CUDA-{CUDA_VERSION}',
     version=OPENMM_VERSION,
