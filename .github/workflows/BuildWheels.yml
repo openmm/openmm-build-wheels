@@ -257,9 +257,6 @@ jobs:
           source "${HOME}/test_env/bin/activate"
           cd openmm/build/python/dist
           export CUDA_VERSION=$(cut -d '-' -f1 <<< ${{ matrix.cuda-version }})
-          if [[ "$CUDA_VERSION" == "13" ]]; then
-            pip install "nvidia-cuda-runtime-cu13==0.0.0a0" "nvidia-cuda-nvcc-cu13==0.0.0a0" "nvidia-cuda-nvrtc-cu13==0.0.0a0" "nvidia-cuda-cupti-cu13==0.0.0a0" "nvidia-cufft-cu13==0.0.0a0"
-          fi
           pip install -f fixed openmm[cuda${CUDA_VERSION},hip${{ matrix.hip-version }}]
           python -m openmm.testInstallation
           python -c "import openmm as mm; print(mm.version.openmm_library_path)"

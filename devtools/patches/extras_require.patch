@@ -6,7 +6,7 @@ index ca26e66a5..88f723962 100644
                                            "openmm.app" : ['data/*.xml', 'data/*.pdb', 'data/amber14/*.xml', 'data/amber19/*.xml', 'data/charmm36/*.xml', 'data/charmm36_2024/*.xml', 'data/implicit/*.xml'],
                                            "openmm.app.internal" : []}
      setupKeywords["install_requires"]  = ["numpy"]
-+    setupKeywords["extras_require"]    = {"cuda12": ["OpenMM-CUDA-12"], "cuda13": ["OpenMM-CUDA-13"], "hip6": ["OpenMM-HIP-6"], "hip7": ["OpenMM-HIP-7"]}
++    setupKeywords["extras_require"]    = {"cuda12": [f"OpenMM-CUDA-12=={setupKeywords["version"]}"], "cuda13": [f"OpenMM-CUDA-13=={setupKeywords["version"]}"], "hip6": [f"OpenMM-HIP-6=={setupKeywords["version"]}"], "hip7": [f"OpenMM-HIP-7=={setupKeywords["version"]}"]}
      setupKeywords["platforms"]         = ["Linux", "Mac OS X", "Windows"]
      setupKeywords["description"]       = \
      "Python wrapper for OpenMM (a C++ MD package)"
