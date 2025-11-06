@@ -18,6 +18,6 @@ setup(
                       f'nvidia-cuda-nvcc{CUDA_SUFFIX}',
                       f'nvidia-cuda-nvrtc{CUDA_SUFFIX}',
                       f'nvidia-cuda-cupti{CUDA_SUFFIX}',
-                      f'nvidia-cufft{CUDA_SUFFIX}'],
+                      f'nvidia-cufft'],
     dependency_links=['https://pypi.ngc.nvidia.com']
 )
