@@ -2,7 +2,7 @@ name: OpenMM-Build-Wheels
 
 env:
   GIT_REVISION: '4768436'
-  VERSION_SUFFIX: ''
+  VERSION_SUFFIX: '.post1'
 
 on:
   push:
@@ -216,13 +216,11 @@ jobs:
             --exclude libOpenMMAmoeba.so \
             --exclude libOpenMMRPMD.so \
             --exclude libOpenCL.so.1 \
-            --exclude libcuda.so.1 \
-            --exclude libcufft.so.11 \
-            --exclude libcufft.so.10 \
-            --exclude libnvrtc.so.11.2 \
-            --exclude libnvrtc.so.12 \
-            --exclude libhiprtc.so.6 \
-            --exclude libamdhip64.so.6
+            --exclude libcuda.so.* \
+            --exclude libcufft.so.* \
+            --exclude libnvrtc.so.* \
+            --exclude libhiprtc.so.* \
+            --exclude libamdhip64.so.*
 
       - name: "Build CUDA wheel"
         shell: bash -l {0}
@@ -258,8 +256,9 @@ jobs:
           python -m venv "${HOME}/test_env"
           source "${HOME}/test_env/bin/activate"
           cd openmm/build/python/dist
+          export OPENMM_VERSION=$(echo $(grep "OPENMM_VERSION:" $GITHUB_WORKSPACE/openmm/build/CMakeCache.txt) | cut -d '=' -f2)$VERSION_SUFFIX
           export CUDA_VERSION=$(cut -d '-' -f1 <<< ${{ matrix.cuda-version }})
-          pip install --pre -f fixed openmm[cuda${CUDA_VERSION},hip${{ matrix.hip-version }}]
+          pip install --pre -f fixed openmm[cuda${CUDA_VERSION},hip${{ matrix.hip-version }}]==$OPENMM_VERSION
           python -m openmm.testInstallation
           python -c "import openmm as mm; print(mm.version.openmm_library_path)"
           python -c "import openmm as mm; print('---Loaded---', *mm.pluginLoadedLibNames, '---Failed---', *mm.Platform.getPluginLoadFailures(), sep='\n')"
@@ -275,6 +274,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     name: "${{ matrix.name }} ${{ matrix.python-version}} CUDA ${{ matrix.cuda-version }} HIP ${{ matrix.hip-version }}"
     strategy:
+      fail-fast: false
       matrix:
         python-version: ["3.10", "3.11", "3.12", "3.13", "3.14"]
         cuda-version: ["12.5.0", "13.0.0"]
@@ -422,10 +422,13 @@ jobs:
         run: |
           python -m venv "%USERPROFILE%\test_env"
           cd openmm\build\python\dist
+          findstr "OPENMM_VERSION:STRING=" %GITHUB_WORKSPACE%\openmm\build\CMakeCache.txt > version.txt
+          set /P OPENMM_VERSION_LINE= < version.txt
+          set OPENMM_VERSION=%OPENMM_VERSION_LINE:~22%%VERSION_SUFFIX%
           set FULL_CUDA_VERSION=${{ matrix.cuda-version }}
           set CUDA_VERSION=%FULL_CUDA_VERSION:~0,2%
           %USERPROFILE%\test_env\Scripts\pip install "numpy"
-          %USERPROFILE%\test_env\Scripts\pip install --pre --find-links . openmm[cuda%CUDA_VERSION%,hip${{ matrix.hip-version }}]
+          %USERPROFILE%\test_env\Scripts\pip install --pre --find-links . openmm[cuda%CUDA_VERSION%,hip${{ matrix.hip-version }}]==%OPENMM_VERSION%
           %USERPROFILE%\test_env\Scripts\python -m openmm.testInstallation
           %USERPROFILE%\test_env\Scripts\python -c "import openmm as mm; print(mm.version.openmm_library_path)"
           %USERPROFILE%\test_env\Scripts\python -c "import openmm as mm; print('---Loaded---', *mm.pluginLoadedLibNames, '---Failed---', *mm.Platform.getPluginLoadFailures(), sep='\n')"
