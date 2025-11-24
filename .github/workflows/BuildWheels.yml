@@ -2,7 +2,7 @@ name: OpenMM-Build-Wheels
 
 env:
   GIT_REVISION: '4768436'
-  VERSION_SUFFIX: '.post1'
+  VERSION_SUFFIX: '.post2'
 
 on:
   push:
@@ -174,7 +174,7 @@ jobs:
           git apply $GITHUB_WORKSPACE/devtools/patches/cxx11_abi.patch
           git apply $GITHUB_WORKSPACE/devtools/patches/extras_require.patch
           git apply $GITHUB_WORKSPACE/devtools/patches/link_args.patch
-          git apply $GITHUB_WORKSPACE/devtools/patches/linux_cuda_rpath.patch
+          git apply $GITHUB_WORKSPACE/devtools/patches/linux_cuda_${{ matrix.cuda-version }}_rpath.patch
 
       - name: "Configure build with CMake"
         shell: bash -l {0}
