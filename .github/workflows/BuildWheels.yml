@@ -156,6 +156,7 @@ jobs:
         run: |
           yum install -y epel-release
           yum install -y https://repo.radeon.com/amdgpu-install/6.4.4/el/9.6/amdgpu-install-6.4.60404-1.el9.noarch.rpm
+          echo "9.6" > /etc/dnf/vars/amdgpudistro
           yum install -y rocm-device-libs hip-devel hip-runtime-amd hipcc
 
       - name: "Install HIP 7"
@@ -163,6 +164,7 @@ jobs:
         run: |
           yum install -y epel-release
           yum install -y https://repo.radeon.com/amdgpu-install/7.0.1/el/9.6/amdgpu-install-7.0.1.70001-1.el9.noarch.rpm
+          echo "9.6" > /etc/dnf/vars/amdgpudistro
           yum install -y rocm-device-libs hip-devel hip-runtime-amd hipcc
 
       - name: "Check out OpenMM source code"
