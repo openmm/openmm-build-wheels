@@ -286,9 +286,9 @@ jobs:
         requirements: [linux]
         include:
           - cuda-version: "12-3"
-            cuda-arch: "aarch64"
+            cuda-arch: "sbsa"
           - cuda-version: "13-0"
-            cuda-arch: "aarch64"
+            cuda-arch: "sbsa"
 
     steps:
       - uses: actions/checkout@v3
@@ -311,10 +311,9 @@ jobs:
       - name: "Install CUDA"
         run: |
           dnf config-manager --add-repo https://developer.download.nvidia.com/compute/cuda/repos/rhel8/${{ matrix.cuda-arch }}/cuda-rhel8.repo
-          export CUDA_VERSION=${{ matrix.cuda-version }}
-          dnf -y install cuda-compiler-${CUDA_VERSION/-/.} \
-                         cuda-libraries-${CUDA_VERSION/-/.} \
-                         cuda-libraries-devel-${CUDA_VERSION/-/.}
+          dnf -y install cuda-compiler-${{ matrix.cuda-version }} \
+                         cuda-libraries-${{ matrix.cuda-version }} \
+                         cuda-libraries-devel-${{ matrix.cuda-version }}
 
       - name: "Check out OpenMM source code"
         run: |
