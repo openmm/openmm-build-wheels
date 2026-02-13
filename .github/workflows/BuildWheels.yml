@@ -311,9 +311,10 @@ jobs:
       - name: "Install CUDA"
         run: |
           dnf config-manager --add-repo https://developer.download.nvidia.com/compute/cuda/repos/rhel8/${{ matrix.cuda-arch }}/cuda-rhel8.repo
-          dnf -y install cuda-compiler-${{ matrix.cuda-version }} \
-                         cuda-libraries-${{ matrix.cuda-version }} \
-                         cuda-libraries-devel-${{ matrix.cuda-version }}
+          export CUDA_VERSION=${{ matrix.cuda-version }}
+          dnf -y install cuda-compiler-${CUDA_VERSION/-/.} \
+                         cuda-libraries-${CUDA_VERSION/-/.} \
+                         cuda-libraries-devel-${CUDA_VERSION/-/.}
 
       - name: "Check out OpenMM source code"
         run: |
