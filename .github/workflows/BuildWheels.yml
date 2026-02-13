@@ -271,6 +271,139 @@ jobs:
           path: openmm/build/python/dist/fixed
           retention-days: 10
 
+  linux-arm:
+    runs-on: ${{ matrix.os }}
+    container:
+      image: quay.io/pypa/manylinux_2_34_aarch64
+    name: "${{ matrix.name }} ${{ matrix.python-version}} CUDA ${{ matrix.cuda-version }}"
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12", "3.13", "3.14"]
+        cuda-version: ["12-3", "13-0"]  # When updating versions, also update extras_require in setup.py
+        name: [Linux ARM]
+        os: [ubuntu-24.04-arm]
+        requirements: [linux]
+        include:
+          - cuda-version: "12-3"
+            cuda-arch: "aarch64"
+          - cuda-version: "13-0"
+            cuda-arch: "aarch64"
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: mamba-org/setup-micromamba@v1
+        with:
+          environment-name: build-env
+          create-args: >-
+            python=${{ matrix.python-version }}
+          init-shell: bash
+
+      - name: "Install dependencies with pip"
+        shell: bash -l {0}
+        run: pip install -v -r devtools/requirements/${{ matrix.requirements }}.txt
+
+      - name: "Install dependencies with yum"
+        run: |
+          yum -y install doxygen zip opencl-headers ocl-icd
+
+      - name: "Install CUDA"
+        run: |
+          dnf config-manager --add-repo https://developer.download.nvidia.com/compute/cuda/repos/rhel8/${{ matrix.cuda-arch }}/cuda-rhel8.repo
+          dnf -y install cuda-compiler-${{ matrix.cuda-version }}.${{ matrix.cuda-arch }} \
+                         cuda-libraries-${{ matrix.cuda-version }}.${{ matrix.cuda-arch }} \
+                         cuda-libraries-devel-${{ matrix.cuda-version }}.${{ matrix.cuda-arch }}
+
+      - name: "Check out OpenMM source code"
+        run: |
+          git clone https://github.com/openmm/openmm.git
+          cd openmm
+          git checkout $GIT_REVISION
+          git apply $GITHUB_WORKSPACE/devtools/patches/library_path.patch
+          git apply $GITHUB_WORKSPACE/devtools/patches/cxx11_abi.patch
+          git apply $GITHUB_WORKSPACE/devtools/patches/link_args.patch
+          git apply $GITHUB_WORKSPACE/devtools/patches/linux_cuda_${{ matrix.cuda-version }}_rpath.patch
+
+      - name: "Configure build with CMake"
+        shell: bash -l {0}
+        run: |
+          cd openmm
+          mkdir build
+          cd build
+          cmake .. \
+            -DCMAKE_INSTALL_PREFIX=${HOME}/openmm-install \
+            -DCMAKE_CXX_FLAGS='-D_GLIBCXX_USE_CXX11_ABI=1' \
+            -DOPENMM_BUILD_OPENCL_LIB=ON \
+            -DOPENCL_INCLUDE_DIR=/usr/include/CL \
+            -DOPENCL_LIBRARY=/usr/lib64/libOpenCL.so.1 \
+            -DCMAKE_POLICY_VERSION_MINIMUM=3.5
+
+      - name: "Build OpenMM"
+        shell: bash -l {0}
+        run: |
+          cd openmm/build
+          make -j4 install
+          make -j4 PythonInstall
+
+      - name: "Build wheel"
+        shell: bash -l {0}
+        run: |
+          cd openmm/build
+          export CUDA_VERSION=$(cut -d '-' -f1 <<< ${{ matrix.cuda-version }})
+          make PythonBdistWheel
+          export LD_LIBRARY_PATH=${HOME}/openmm-install/lib
+          cd python/dist
+          python $GITHUB_WORKSPACE/devtools/scripts/add_plugins_and_headers.py "${HOME}/openmm-install" "!CUDA"
+          auditwheel repair -w fixed -L ".libs/lib" --plat manylinux_2_34_aarch64 *.whl \
+            --exclude libOpenMM.so \
+            --exclude libOpenMMCUDA.so \
+            --exclude libOpenMMOpenCL.so \
+            --exclude libOpenMMDrude.so \
+            --exclude libOpenMMAmoeba.so \
+            --exclude libOpenMMRPMD.so \
+            --exclude libOpenCL.so.1 \
+            --exclude libcuda.so.* \
+            --exclude libcufft.so.* \
+            --exclude libnvrtc.so.*
+
+      - name: "Build CUDA wheel"
+        shell: bash -l {0}
+        run: |
+          cd $GITHUB_WORKSPACE/devtools/cuda
+          export OPENMM_VERSION=$(echo $(grep "OPENMM_VERSION:" $GITHUB_WORKSPACE/openmm/build/CMakeCache.txt) | cut -d '=' -f2)$VERSION_SUFFIX
+          export CUDA_VERSION=$(cut -d '-' -f1 <<< ${{ matrix.cuda-version }})
+          python setup.py bdist_wheel
+          cd dist
+          python $GITHUB_WORKSPACE/devtools/scripts/add_plugins_and_headers.py "${HOME}/openmm-install" "CUDA"
+          mv *.whl $GITHUB_WORKSPACE/openmm/build/python/dist/fixed
+
+      - name: "Rename wheels"
+        shell: bash -l {0}
+        run: |
+          python $GITHUB_WORKSPACE/devtools/scripts/rename_wheels.py $GITHUB_WORKSPACE/openmm/build/python/dist/fixed
+
+      - name: "Test the wheel"
+        shell: bash -l {0}
+        run: |
+          set -x
+          python -m venv "${HOME}/test_env"
+          source "${HOME}/test_env/bin/activate"
+          cd openmm/build/python/dist
+          export OPENMM_VERSION=$(echo $(grep "OPENMM_VERSION:" $GITHUB_WORKSPACE/openmm/build/CMakeCache.txt) | cut -d '=' -f2)$VERSION_SUFFIX
+          export CUDA_VERSION=$(cut -d '-' -f1 <<< ${{ matrix.cuda-version }})
+          pip install --pre -f fixed openmm[cuda${CUDA_VERSION}]==$OPENMM_VERSION
+          python -m openmm.testInstallation
+          python -c "import openmm as mm; print(mm.version.openmm_library_path)"
+          python -c "import openmm as mm; print('---Loaded---', *mm.pluginLoadedLibNames, '---Failed---', *mm.Platform.getPluginLoadFailures(), sep='\n')"
+
+      - name: "Upload the wheel"
+        uses: actions/upload-artifact@v4
+        with:
+          name: openmm-wheel-linux-arm-${{matrix.python-version}}-cuda-${{matrix.cuda-version}}
+          path: openmm/build/python/dist/fixed
+          retention-days: 10
+
   windows:
     runs-on: ${{ matrix.os }}
     name: "${{ matrix.name }} ${{ matrix.python-version}} CUDA ${{ matrix.cuda-version }} HIP ${{ matrix.hip-version }}"
