@@ -1,8 +1,8 @@
 name: OpenMM-Build-Wheels
 
 env:
-  GIT_REVISION: 'b55e608'
-  VERSION_SUFFIX: ''
+  GIT_REVISION: 'f7fa0c2'
+  VERSION_SUFFIX: 'rc1'
 
 on:
   push:
