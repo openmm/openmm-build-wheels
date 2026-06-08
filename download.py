@@ -6,7 +6,7 @@ if len(sys.argv) != 2:
     print("Expected one argument (the run ID)")
     exit()
 run_id = sys.argv[1]
-response = requests.get(f'https://api.github.com/repos/openmm/openmm-build-wheels/actions/runs/{run_id}/artifacts')
+response = requests.get(f'https://api.github.com/repos/openmm/openmm-build-wheels/actions/runs/{run_id}/artifacts?per_page=100')
 if response.status_code == 200:
     artifacts = response.json().get('artifacts', [])
     for artifact in artifacts:
