@@ -26,12 +26,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: mamba-org/setup-micromamba@v1
+#      - uses: mamba-org/setup-micromamba@v1
+#        with:
+#          environment-name: build-env
+#          create-args: >-
+#            python=${{ matrix.python-version }}
+#          init-shell: bash
+      - uses: actions/setup-python@v7
         with:
-          environment-name: build-env
-          create-args: >-
-            python=${{ matrix.python-version }}
-          init-shell: bash
+          python-version: ${{ matrix.python-version }}
 
       - name: "Install dependencies"
         shell: bash -l {0}
@@ -85,8 +88,7 @@ jobs:
             --exclude libOpenMMAmoeba.dylib \
             --exclude libOpenMMAmoebaOpenCL.dylib \
             --exclude libOpenMMRPMD.dylib \
-            --exclude libOpenMMRPMDOpenCL.dylib \
-            --exclude libc++
+            --exclude libOpenMMRPMDOpenCL.dylib
 
       - name: "Test the wheel"
         shell: bash -l {0}
