@@ -4,4 +4,4 @@ swig
 numpy
 delocate
 wheel
-setuptools
+setuptools>=80
