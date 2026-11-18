@@ -73,12 +73,16 @@ jobs:
           python -m delocate.cmd.delocate_wheel -w fixed -v *.whl -L "../OpenMM.libs/lib" --sanitize-rpaths \
             --exclude libOpenMM.dylib \
             --exclude libOpenMMOpenCL.dylib \
+            --exclude libOpenMMMetal.dylib \
             --exclude libOpenMMDrude.dylib \
             --exclude libOpenMMDrudeOpenCL.dylib \
+            --exclude libOpenMMDrudeMetal.dylib \
             --exclude libOpenMMAmoeba.dylib \
             --exclude libOpenMMAmoebaOpenCL.dylib \
+            --exclude libOpenMMAmoebaMetal.dylib \
             --exclude libOpenMMRPMD.dylib \
             --exclude libOpenMMRPMDOpenCL.dylib
+            --exclude libOpenMMRPMDMetal.dylib
 
       - name: "Test the wheel"
         run: |
